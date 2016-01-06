@@ -48,6 +48,7 @@
 		"post-editor/post-type-switch": false,
 		"post-editor/contact-form": true,
 		"post-editor/media-advanced": true,
+		"post-editor/wpvideo-view": true,
 
 		"manage/media": true,
 		"manage/posts": true,
