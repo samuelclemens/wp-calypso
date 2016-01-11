@@ -1,39 +1,37 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { Component } from 'react';
 
 /**
  * Internal dependencies
  */
 import shortcodeUtils from 'lib/shortcode';
 
-const WpVideoView = React.createClass( {
+class WpVideoView extends Component {
 
-	statics: {
-		match( content ) {
-			const match = shortcodeUtils.next( 'wpvideo', content );
+	static match( content ) {
+		const match = shortcodeUtils.next( 'wpvideo', content );
 
-			if ( match ) {
-				return {
-					index: match.index,
-					content: match.content,
-					options: {
-						shortcode: match.shortcode
-					}
-				};
-			}
-		},
-
-		serialize( content ) {
-			return encodeURIComponent( content );
+		if ( match ) {
+			return {
+				index: match.index,
+				content: match.content,
+				options: {
+					shortcode: match.shortcode
+				}
+			};
 		}
-	},
+	}
+
+	static serialize( content ) {
+		return encodeURIComponent( content );
+	}
 
 	getEmbedUrl() {
 		var videopress_guid = shortcodeUtils.parse( this.props.content ).attrs.numeric[0];
 		return `https://videopress.com/embed/${ videopress_guid }`;
-		},
+	}
 
 	render() {
 		return (
@@ -44,6 +42,6 @@ const WpVideoView = React.createClass( {
 		);
 	}
 
-} );
+}
 
 export default WpVideoView;
