@@ -11,9 +11,9 @@ import Card from 'components/card'
 import MainComponent from 'components/main'
 import SectionHeader from 'components/section-header'
 import SidebarNavigation from 'my-sites/sidebar-navigation'
-import VaultPressInstructions from './vaultpress'
-import AkismetInstructions from './akismet'
-import PolldaddyInstructions from './polldaddy'
+import VaultPressInstructions from './plugins/vaultpress'
+import AkismetInstructions from './plugins/akismet'
+import PolldaddyInstructions from './plugins/polldaddy'
 
 module.exports = React.createClass( {
 
