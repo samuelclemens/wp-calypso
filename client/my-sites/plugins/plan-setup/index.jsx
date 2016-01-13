@@ -12,6 +12,13 @@ module.exports = React.createClass( {
 
 	displayName: 'PlanSetup',
 
+	getInitialState: function() {
+		return {
+			keys: {},
+			status: 'not-started', // installing $plugin, configuring $plugin, finished, error
+		};
+	},
+
 	runInstall: function() {
 		let steps = PluginInstallation.start( {
 			site: this.props.selectedSite,
