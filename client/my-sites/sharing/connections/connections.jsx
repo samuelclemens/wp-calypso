@@ -117,11 +117,11 @@ export default React.createClass( {
 			<div>
 				<SharingServicesGroup
 					services={ where( services, { type: 'publicize' } ) }
-					label={ this.translate( 'Publicize Your Posts' ) }
+					title={ this.translate( 'Publicize Your Posts' ) }
 					{ ...commonGroupProps } />
 				<SharingServicesGroup
 					services={ where( services, { type: 'other' } ) }
-					label={ this.translate( 'Other Connections' ) }
+					title={ this.translate( 'Other Connections' ) }
 					description={ this.translate( 'Connect any of these additional services to further enhance your site.' ) }
 					{ ...commonGroupProps } />
 			</div>

@@ -16,7 +16,7 @@ var ServiceTip = require( './service-tip' ),
 	serviceConnections = require( './service-connections' ),
 	analytics = require( 'analytics' ),
 	FoldableCard = require( 'components/foldable-card' ),
-	ServiceLogo = require( './service-logo' );
+	SocialLogo = require( 'components/social-logo' );
 
 module.exports = React.createClass( {
 	displayName: 'SharingService',
@@ -199,7 +199,7 @@ module.exports = React.createClass( {
 	render: function() {
 		var connectionStatus = serviceConnections.getConnectionStatus( this.props.service.name ),
 			connections = serviceConnections.getConnections( this.props.service.name ),
-			elementClass;
+			elementClass, icon;
 
 		elementClass = [
 			'sharing-service',
@@ -208,9 +208,22 @@ module.exports = React.createClass( {
 			this.state.isOpen ? 'is-open' : ''
 		].join( ' ' );
 
+		const iconsMap = {
+			'Facebook': 'facebook',
+			'Twitter': 'twitter',
+			'Google+': 'google-plus-alt',
+			'LinkedIn': 'linkedin',
+			'Tumblr': 'tumblr-alt',
+			'Path': 'path-alt',
+			'Eventbrite': 'eventbrite'
+		};
+		
 		const header = (
 			<div>
-				<ServiceLogo service={ this.props.service.label } />
+				<SocialLogo
+					icon={ iconsMap[ this.props.service.label ] }
+					size={ 48 }
+					className="sharing-service__logo" />
 
 				<div className="sharing-service__name">
 					<h2>{ this.props.service.label }</h2>
@@ -219,7 +232,6 @@ module.exports = React.createClass( {
 						status={ connectionStatus }
 						numberOfConnections={ connections.length } />
 				</div>
-
 			</div>
 		);
 

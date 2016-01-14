@@ -114,7 +114,7 @@ module.exports = React.createClass( {
 
 		return (
 			<div className={ classes }>
-				<SectionHeader label={ this.props.label } />
+				<SectionHeader label={ this.props.title } />
 				<ul className="sharing-services-group__services">
 					{ this.renderServices( services ) }
 				</ul>

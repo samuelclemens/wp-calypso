@@ -15,77 +15,58 @@ $color-print: #f8f8f8;
 
 .foldable-card.sharing-service {
 
-	&.facebook{
-		h2{
+	.sharing-service__logo {
+		float: left;
+		margin-right: 8px;
+	}
+
+	&.facebook {
+		h2,
+		.sharing-service__logo{
 			color: $color-facebook;
 		}
-		.sharing-service__logo {
-			background-color: $color-facebook;
-		}
 	}
 
-	&.twitter{
-		h2{
+	&.twitter {
+		h2,
+		.sharing-service__logo{
 			color: $color-twitter;
 		}
-		.sharing-service__logo {
-			background-color: $color-twitter;
-		}
 	}
 
-	&.google_plus{
-		h2 {
+	&.google_plus {
+		h2,
+		.sharing-service__logo {
 			color: $color-gplus;
 		}
-		.sharing-service__logo {
-			background-color: $color-gplus;
-		}
 	}
 
-	&.linkedin{
-		h2 {
+	&.linkedin {
+		h2,
+		.sharing-service__logo {
 			color: $color-linkedin;
 		}
-		.sharing-service__logo {
-			background-color: $color-linkedin;
-		}
+
 	}
 
 	&.tumblr{
-		h2 {
-			color: $color-tumblr;
-		}
+		h2,
 		.sharing-service__logo {
-			background-color: $color-tumblr;
+			color: $color-tumblr;
 		}
 	}
 
 	&.path{
-		h2 {
-			color: $color-path;
-		}
+		h2,
 		.sharing-service__logo {
-			background-color: $color-path;
+			color: $color-path;
 		}
 	}
 
 	&.eventbrite{
-		h2 {
-			color: $color-eventbrite;
-		}
+		h2,
 		.sharing-service__logo {
-			background-color: $color-path;
-		}
-	}
-
-	.sharing-service__logo {
-		float: left;
-		width: 36px;
-		height: 36px;
-		margin-right: 16px;
-
-		path{
-			fill: #000;
+			color: $color-eventbrite;
 		}
 	}
 
@@ -374,6 +355,7 @@ $color-print: #f8f8f8;
 .sharing-service__description {
 	margin: 0;
 	color: darken( $gray, 20% );
+	font-size: 14px;
 
 	@include breakpoint( "<480px" ) {
 		display: none;
