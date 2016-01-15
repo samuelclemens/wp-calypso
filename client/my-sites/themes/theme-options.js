@@ -4,7 +4,6 @@
 import assign from 'lodash/object/assign';
 import mapValues from 'lodash/object/mapValues';
 import pick from 'lodash/object/pick';
-import partial from 'lodash/function/partial';
 
 /**
  * Internal dependencies
@@ -20,21 +19,27 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 			isHidden: ! isLoggedOut
 		},
 		preview: {
-			hasAction: true,
+			action: theme => togglePreview( theme ),
 			hideForTheme: theme => theme.active
 		},
 		purchase: {
-			hasAction: true,
+			action: theme => site
+				? actions.purchase( theme, site, 'showcase' )
+				: setSelectedTheme( 'purchase', theme ),
 			isHidden: isLoggedOut || ! config.isEnabled( 'upgrades/checkout' ),
 			hideForTheme: theme => theme.active || theme.purchased || ! theme.price
 		},
 		activate: {
-			hasAction: true,
+			action: theme => site
+				? actions.activate( theme, site, 'showcase' )
+				: setSelectedTheme( 'activate', theme ),
 			isHidden: isLoggedOut,
 			hideForTheme: theme => theme.active || ( theme.price && ! theme.purchased )
 		},
 		customize: {
-			hasAction: true,
+			action: theme => site
+				? actions.customize( theme, site )
+				: setSelectedTheme( 'customize', theme ),
 			isHidden: isLoggedOut && ( site && ! site.isCustomizable() ),
 			hideForTheme: theme => ! theme.active
 		},
@@ -55,7 +60,7 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 
 	let options = pick( buttonOptions, option => ! option.isHidden );
 	options = mapValues( options, appendLabelAndHeader );
-	options = mapValues( options, appendAction );
+	options = mapValues( options, appendActionTracking );
 	return options;
 
 	function appendLabelAndHeader( option, name ) {
@@ -71,32 +76,23 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 			label, header
 		} );
 	};
-
-	function appendAction( option, name ) {
-		const { hasAction } = option;
-
-		if ( ! hasAction ) {
-			return option;
-		}
-
-		let action;
-		if ( name === 'preview' ) {
-			action = togglePreview;
-		} else if ( site ) {
-			action = partial( actions[ name ], partial.placeholder, site, 'showcase' );
-		} else {
-			action = setSelectedTheme.bind( null, name );
-		}
-
-		return assign( {}, option, {
-			action: trackedAction( action, name )
-		} );
-	}
-
-	function trackedAction( action, name ) {
-		return t => {
-			action( t );
-			Helper.trackClick( 'more button', name );
-		};
-	}
 };
+
+function appendActionTracking( option, name ) {
+	const { action } = option;
+
+	if ( ! action ) {
+		return option;
+	}
+
+	return assign( {}, option, {
+		action: trackedAction( action, name )
+	} );
+}
+
+function trackedAction( action, name ) {
+	return t => {
+		action( t );
+		Helper.trackClick( 'more button', name );
+	};
+}
