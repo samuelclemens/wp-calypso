@@ -105,19 +105,30 @@ InstallationFlow.prototype.install = function( slug, next ){
 // the registration key inside the array, then re-save. Trigger a connection
 // from the site to VP so the VP db knows about the site (?)
 function configureVaultPress( site, key, callback ) {
-	callback();
+	site.getOption( { option_name: 'vaultpress' }, ( error, data ) => {
+		if ( error ) {
+			return;
+		}
+		// Might need to build up the option_value?
+		let option_value = data.option_value || {};
+		option_value.key = key;
+		site.setOption( { option_name: 'vaultpress', is_array: true, option_value: option_value }, ( error, data ) => {
+			callback();
+		} );
+	} );
 }
 
 // Configure Polldaddy. Save the `polldaddy_api_key`.
 function configurePolldaddy( site, key, callback ) {
-	callback();
+	site.setOption( { option_name: 'wordpress_api_key', option_value: key }, ( error, data ) => {
+		callback();
+	} );
 }
 
 // Configure Akismet. Set the `wordpress_api_key`, then trigger a connection from
 // the site to notify Akismet of a new site.
 function configureAkismet( site, key, callback ) {
-	let option = site.setOption( { option_name: 'wordpress_api_key', option_value: key }, ( error, data ) => {
-		console.log( 'done', error, data );
+	site.setOption( { option_name: 'polldaddy_api_key', option_value: key }, ( error, data ) => {
 		callback();
 	} );
 }

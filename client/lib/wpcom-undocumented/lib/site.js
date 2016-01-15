@@ -175,6 +175,7 @@ UndocumentedSite.prototype.setOption = function( query, callback ) {
 		'/sites/' + this._id + '/option',
 		{
 			option_name: query.option_name,
+			is_array: query.is_array,
 			site_option: query.site_option
 		},
 		{ option_value: query.option_value },
