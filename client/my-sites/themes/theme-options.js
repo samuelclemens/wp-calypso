@@ -18,7 +18,7 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 	const buttonOptions = {
 		signup: {
 			hasUrl: true,
-			hideForSite: ! isLoggedOut
+			isHidden: ! isLoggedOut
 		},
 		preview: {
 			hasAction: true,
@@ -27,17 +27,17 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 		},
 		purchase: {
 			hasAction: true,
-			hideForSite: isLoggedOut || ! config.isEnabled( 'upgrades/checkout' ),
+			isHidden: isLoggedOut || ! config.isEnabled( 'upgrades/checkout' ),
 			hideForTheme: theme => theme.active || theme.purchased || ! theme.price
 		},
 		activate: {
 			hasAction: true,
-			hideForSite: isLoggedOut,
+			isHidden: isLoggedOut,
 			hideForTheme: theme => theme.active || ( theme.price && ! theme.purchased )
 		},
 		customize: {
 			hasAction: true,
-			hideForSite: isLoggedOut && ( site && ! site.isCustomizable() ),
+			isHidden: isLoggedOut && ( site && ! site.isCustomizable() ),
 			hideForTheme: theme => ! theme.active
 		},
 		separator: {
@@ -50,12 +50,12 @@ export function getButtonOptions( site, isLoggedOut, actions, setSelectedTheme, 
 			hasUrl: true,
 			// We don't know where support docs for a given theme on a self-hosted WP install are,
 			// and free themes don't have support docs.
-			hideForSite: site && site.jetpack,
+			isHidden: site && site.jetpack,
 			hideForTheme: theme => ! Helper.isPremium( theme )
 		},
 	};
 
-	let options = pick( buttonOptions, option => ! option.hideForSite );
+	let options = pick( buttonOptions, option => ! option.isHidden );
 	options = mapValues( options, appendLabelAndHeader );
 	options = mapValues( options, appendUrl );
 	options = mapValues( options, appendAction );
