@@ -28,15 +28,45 @@ class WpVideoView extends Component {
 		return encodeURIComponent( content );
 	}
 
-	getEmbedUrl() {
-		var videopress_guid = shortcodeUtils.parse( this.props.content ).attrs.numeric[0];
-		return `https://videopress.com/embed/${ videopress_guid }`;
+	getShortCodeAttributes() {
+		const shortcode = shortcodeUtils.parse( this.props.content );
+		const namedAttrs = shortcode.attrs.named;
+		const defaultWidth = 640;
+		const defaultHeight = defaultWidth * 9 / 16;
+		return {
+			videopress_guid: shortcode.attrs.numeric[0],
+			w: parseInt( namedAttrs.w, 10 ) || defaultWidth,
+			h: parseInt( namedAttrs.h, 10 ) || defaultHeight,
+			autoplay: namedAttrs.autoplay === 'true',
+			hd: namedAttrs.hd === 'true',
+			loop: namedAttrs.loop === 'true',
+			at: parseInt( namedAttrs.at, 10) || 0,
+			defaultLangCode: namedAttrs.defaultlangcode || false
+		};
+	}
+
+	getEmbedUrl( attrs ) {
+		const nonUrlAttributes= ['videopress_guid', 'w', 'h'];
+		const str = Object.keys( attrs ).filter( function ( key ) {
+			return ! nonUrlAttributes.some( function ( k ) {
+					return key === k;
+				}
+			)
+		}).map(function ( key ) {
+			return encodeURIComponent( key ) + '=' + encodeURIComponent( attrs[key] );
+		}).join('&');
+
+		return `https://videopress.com/embed/${ attrs.videopress_guid }?${ str }`;
 	}
 
 	render() {
+		const attrs = this.getShortCodeAttributes();
+
 		return (
 			<iframe
-				src={ this.getEmbedUrl() }
+				width = { attrs.w }
+				height = { attrs.h }
+				src={ this.getEmbedUrl( attrs ) }
 				frameBorder="0"
 				allowFullScreen />
 		);
