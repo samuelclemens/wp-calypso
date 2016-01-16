@@ -12,14 +12,14 @@ import Helper from 'lib/themes/helpers';
 import actionLabels from './action-labels';
 import config from 'config';
 
-export function getButtonOptions( site, isLoggedOut, actions, letUserSelectSite, togglePreview ) {
+export function getButtonOptions( site, isLoggedOut, actions, letUserSelectSite, showPreview ) {
 	const buttonOptions = {
 		signup: {
 			getUrl: theme => Helper.getSignupUrl( theme ),
 			isHidden: ! isLoggedOut
 		},
 		preview: {
-			action: theme => togglePreview( theme ),
+			action: theme => showPreview( theme ),
 			hideForTheme: theme => theme.active
 		},
 		purchase: {
