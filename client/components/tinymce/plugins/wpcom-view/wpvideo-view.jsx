@@ -63,12 +63,14 @@ class WpVideoView extends Component {
 		const attrs = this.getShortCodeAttributes();
 
 		return (
-			<iframe
-				width = { attrs.w }
-				height = { attrs.h }
-				src={ this.getEmbedUrl( attrs ) }
-				frameBorder="0"
-				allowFullScreen />
+			<div className="wpview-content">
+				<iframe
+					width = { attrs.w }
+					height = { attrs.h }
+					src={ this.getEmbedUrl( attrs ) }
+					frameBorder="0"
+					allowFullScreen />
+			</div>
 		);
 	}
 
