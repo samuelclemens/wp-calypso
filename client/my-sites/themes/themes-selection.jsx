@@ -31,7 +31,8 @@ const ThemesSelection = React.createClass( {
 		onScreenshotClick: PropTypes.func.isRequired,
 		getOptions: React.PropTypes.func,
 		queryParams: PropTypes.object.isRequired,
-		themesList: PropTypes.array.isRequired
+		themesList: PropTypes.array.isRequired,
+		getActionLabel: React.PropTypes.func
 	},
 
 	getInitialState: function() {
@@ -104,7 +105,8 @@ const ThemesSelection = React.createClass( {
 					<ThemesList getButtonOptions={ this.props.getOptions }
 						onMoreButtonClick={ this.onMoreButtonClick }
 						onScreenshotClick={ this.onScreenshotClick }
-						getScreenshotUrl={ site ? partialRight( Helper.getPreviewUrl, site ) : null } />
+						getScreenshotUrl={ site ? partialRight( Helper.getPreviewUrl, site ) : null }
+						getActionLabel={ this.props.getActionLabel } />
 				</ThemesData>
 			</div>
 		);

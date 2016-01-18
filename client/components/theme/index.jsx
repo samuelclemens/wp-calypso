@@ -84,24 +84,12 @@ var Theme = React.createClass( {
 	},
 
 	renderHover: function() {
-		var actionLabel = this.translate( 'Preview', {
-			comment: 'appears on hovering a single theme thumbnail, opens the theme demo site preview'
-		} );
-
-		if ( this.props.theme.active ) {
-			actionLabel = this.translate( 'Customize', {
-				comment: 'appears on hovering the active single theme thumbnail, opens the customizer'
-			} );
-		} else {
-			actionLabel = this.props.actionLabel || actionLabel;
-		}
-
 		if ( this.props.screenshotClickUrl || this.props.onScreenshotClick ) {
 			return (
 				<a className="theme__active-focus"
 					onClick={ this.onScreenshotClick }>
 					<span>
-						{ actionLabel }
+						{ this.props.actionLabel }
 					</span>
 				</a>
 			);

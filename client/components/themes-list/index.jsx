@@ -28,6 +28,7 @@ var ThemesList = React.createClass( {
 		getButtonOptions: React.PropTypes.func,
 		onScreenshotClick: React.PropTypes.func.isRequired,
 		onMoreButtonClick: React.PropTypes.func,
+		getActionLabel: React.PropTypes.func
 	},
 
 	fetchNextPage: function( options ) {
@@ -57,6 +58,7 @@ var ThemesList = React.createClass( {
 			screenshotClickUrl={ this.props.getScreenshotUrl && this.props.getScreenshotUrl( theme ) }
 			onScreenshotClick={ this.props.onScreenshotClick }
 			onMoreButtonClick={ this.props.onMoreButtonClick }
+			actionLabel={ this.props.getActionLabel( theme ) }
 			index={ index }
 			theme={ theme } />;
 	},

@@ -120,8 +120,8 @@ var Themes = React.createClass( {
 				this.showSiteSelectorModal,
 				this.togglePreview
 			),
-			onScreenshotClick = function( theme ) {
-				buttonOptions[ ( site && theme.active ) ? 'customize' : 'preview' ].action( theme );
+			getScreenshotAction = function( theme ) {
+				return buttonOptions[ ( site && theme.active ) ? 'customize' : 'preview' ];
 			};
 
 		if ( isJetpack && jetpackEnabled && ! site.hasJetpackThemes ) {
@@ -165,7 +165,12 @@ var Themes = React.createClass( {
 						key={ this.isMultisite() || site.ID }
 						siteId={ this.props.siteId }
 						selectedSite={ site }
-						onScreenshotClick={ onScreenshotClick }
+						onScreenshotClick={ function( theme ) {
+							getScreenshotAction( theme ).action( theme );
+						} }
+						getActionLabel={ function( theme ) {
+							return getScreenshotAction( theme ).label
+						} }
 						getOptions={ function( theme ) {
 							return pick(
 								addTracking( buttonOptions ),
