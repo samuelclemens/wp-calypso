@@ -3,6 +3,8 @@
  */
 import React, { Component } from 'react';
 import defaults from 'lodash/object/defaults';
+import omit from 'lodash/object/omit';
+import QueryString from 'querystring' ;
 
 /**
  * Internal dependencies
@@ -53,17 +55,9 @@ class WpVideoView extends Component {
 	}
 
 	getEmbedUrl( attrs ) {
-		const nonUrlAttributes= ['videopress_guid', 'w', 'h'];
-		const str = Object.keys( attrs ).filter( function ( key ) {
-			return ! nonUrlAttributes.some( function ( k ) {
-					return key === k;
-				}
-			)
-		}).map(function ( key ) {
-			return encodeURIComponent( key ) + '=' + encodeURIComponent( attrs[key] );
-		}).join('&');
+		const queryString = QueryString.stringify( omit( attrs, ['videopress_guid', 'w', 'h'] ) );
 
-		return `https://videopress.com/embed/${ attrs.videopress_guid }?${ str }`;
+		return `https://videopress.com/embed/${ attrs.videopress_guid }?${ queryString }`;
 	}
 
 	render() {
