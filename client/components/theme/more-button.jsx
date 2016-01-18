@@ -92,7 +92,7 @@ var ThemeMoreButton = React.createClass( {
 
 					{ map( this.props.options, function( option, key ) {
 						if ( option.separator ) {
-							return ( <hr key={ 'separator-' + key } className="popover__hr" /> );
+							return ( <hr key={ key } className="popover__hr" /> );
 						}
 						if ( option.getUrl ) {
 							const url = option.getUrl( this.props.theme );
