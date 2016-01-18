@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
  */
 import Gridicon from 'components/gridicon';
 import ContactFormDialog from './dialog';
-import { initContactForm, addDefaultField, removeField } from 'state/ui/editor/forms/actions';
+import { initContactForm, addDefaultField, removeField } from 'state/ui/editor/contact-form/actions';
 import { serialize, deserialize } from './shortcode-utils';
 
 const wpcomContactForm = editor => {
