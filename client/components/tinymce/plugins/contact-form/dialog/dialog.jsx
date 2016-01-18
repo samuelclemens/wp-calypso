@@ -69,7 +69,7 @@ export default React.createClass( {
 				</ul>
 				</div>
 				<FormFieldset>
-					<FormButton onClick={ this.props.onAdd }>Add  New Field</FormButton>
+					<FormButton onClick={ this.props.onAdd }>Add New Field</FormButton>
 				</FormFieldset>
 			</Dialog>
 		);
