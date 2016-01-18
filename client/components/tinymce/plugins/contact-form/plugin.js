@@ -34,11 +34,6 @@ const wpcomContactForm = editor => {
 	editor.addCommand( 'wpcomContactForm', content => {
 		store.dispatch( initContactForm( deserialize( content ) ) );
 
-		function onClose() {
-			editor.focus();
-			renderModal( 'hide' );
-		};
-
 		function renderModal( visibility = 'show' ) {
 			render(
 				createElement( Provider, { store },
@@ -50,7 +45,10 @@ const wpcomContactForm = editor => {
 						onRemove( index ) {
 							store.dispatch( removeField( index ) );
 						},
-						onClose,
+						onClose() {
+							editor.focus();
+							renderModal( 'hide' );
+						},
 						onSave() {
 							//get contact form from state to save
 							const state = store.getState();
