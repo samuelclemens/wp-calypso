@@ -5,7 +5,7 @@ import Shortcode from 'lib/shortcode';
 
 export function serialize( contactForm ) {
 	const fields = contactForm.fields.map( field => {
-		let fielShortcode = {
+		let fieldShortcode = {
 			tag: 'contact-field',
 			type: 'self-closing',
 			attrs: {
@@ -14,12 +14,12 @@ export function serialize( contactForm ) {
 			}
 		};
 
-		//only add required field of specified.
+		//only add required field when specified.
 		if ( field.required ) {
-			fielShortcode.attrs.required = 1;
+			fieldShortcode.attrs.required = 1;
 		}
 
-		return Shortcode.stringify( fielShortcode );
+		return Shortcode.stringify( fieldShortcode );
 	} ).join( '' );
 
 	return Shortcode.stringify( {

@@ -59,13 +59,17 @@ export default React.createClass( {
 				buttons={ buttons }
 				additionalClassNames="contact-form__dialog" >
 				<FormFieldset>
-					<FormLabel>
-						<span>Here be dragons. Click Save to add a generic contact form...</span>
-					</FormLabel>
+					<FormLabel>Here be dragons. Click Save to add a generic contact form...</FormLabel>
 				</FormFieldset>
 				<div>
 				<ul>
-					{ this.props.contactForm.fields.map( ( field, index ) => <FormItem key={ index } index={ index } label={ field.label } onClick={ this.props.onRemove } /> ) }
+					{ this.props.contactForm.fields.map( ( field, index ) => (
+						<FormItem
+							key={ index }
+							index={ index }
+							label={ field.label }
+							onClick={ this.props.onRemove } />
+					 ) ) }
 				</ul>
 				</div>
 				<FormFieldset>
