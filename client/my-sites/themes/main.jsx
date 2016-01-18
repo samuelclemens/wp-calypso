@@ -118,7 +118,10 @@ var Themes = React.createClass( {
 				bindActionCreators( Action, dispatch ),
 				this.setSelectedTheme,
 				this.togglePreview
-			);
+			),
+			onScreenshotClick = function( theme ) {
+				buttonOptions[ ( site && theme.active ) ? 'customize' : 'preview' ].action( theme );
+			};
 
 		if ( isJetpack && jetpackEnabled && ! site.hasJetpackThemes ) {
 			return <JetpackUpgradeMessage site={ site } />;
@@ -156,16 +159,15 @@ var Themes = React.createClass( {
 				{ this.renderThankYou() }
 				{ ! this.isMultisite() && this.renderCurrentTheme() }
 				{ isJetpack && ! jetpackEnabled
-					? this.renderJetpackMessage()
-					: <ThemesSelection search={ this.props.search }
+				? this.renderJetpackMessage()
+				: <ThemesSelection search={ this.props.search }
 						key={ this.isMultisite() || site.ID }
 						siteId={ this.props.siteId }
 						selectedSite={ site }
-						togglePreview={ this.togglePreview }
+						onScreenshotClick={ onScreenshotClick }
 						options={ addTracking( buttonOptions ) }
 						trackScrollPage={ this.props.trackScrollPage }
 						tier={ this.props.tier }
-						customize={ bindActionCreators( Action.customize, dispatch ) }
 						queryParams={ this.props.queryParams }
 						themesList={ this.props.themesList } />
 				}
