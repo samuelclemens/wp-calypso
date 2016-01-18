@@ -69,7 +69,7 @@ var Themes = React.createClass( {
 		);
 	},
 
-	setSelectedTheme: function( action, theme ) {
+	showSiteSelectorModal: function( action, theme ) {
 		this.setState( { selectedTheme: theme, selectedAction: action } );
 	},
 
@@ -84,7 +84,7 @@ var Themes = React.createClass( {
 	},
 
 	hideSiteSelectorModal: function() {
-		this.setSelectedTheme( null, null );
+		this.showSiteSelectorModal( null, null );
 	},
 
 	isThemeOrActionSet: function() {
@@ -116,7 +116,7 @@ var Themes = React.createClass( {
 				site,
 				this.props.isLoggedOut,
 				bindActionCreators( Action, dispatch ),
-				this.setSelectedTheme,
+				this.showSiteSelectorModal,
 				this.togglePreview
 			),
 			onScreenshotClick = function( theme ) {
