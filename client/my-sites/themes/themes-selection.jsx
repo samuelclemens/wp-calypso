@@ -80,10 +80,8 @@ const ThemesSelection = React.createClass( {
 	},
 
 	onScreenshotClick( theme, resultsRank ) {
-		const site = this.props.selectedSite;
-
 		Helper.trackClick( 'theme', 'screenshot' );
-		if ( ! ( theme.active && site ) ) {
+		if ( ! theme.active ) {
 			this.recordSearchResultsClick( theme, resultsRank );
 		}
 		this.props.onScreenshotClick( theme );
