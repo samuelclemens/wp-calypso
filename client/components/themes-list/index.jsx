@@ -3,8 +3,7 @@
  */
 var React = require( 'react' ),
 	times = require( 'lodash/utility/times' ),
-	isEqual = require( 'lodash/lang/isEqual' ),
-	pick = require( 'lodash/object/pick' );
+	isEqual = require( 'lodash/lang/isEqual' );
 
 /**
  * Internal dependencies
@@ -26,13 +25,7 @@ var ThemesList = React.createClass( {
 		emptyContent: React.PropTypes.element,
 		loading: React.PropTypes.bool.isRequired,
 		fetchNextPage: React.PropTypes.func.isRequired,
-		buttonOptions: React.PropTypes.objectOf( {
-			label: React.PropTypes.string,
-			header: React.PropTypes.string,
-			action: React.PropTypes.func,
-			getUrl: React.PropTypes.func,
-			hideForTheme: React.PropTypes.func
-		} ),
+		getButtonOptions: React.PropTypes.func,
 		onScreenshotClick: React.PropTypes.func.isRequired,
 		onMoreButtonClick: React.PropTypes.func,
 	},
@@ -58,14 +51,9 @@ var ThemesList = React.createClass( {
 	},
 
 	renderTheme: function( theme, index ) {
-		const buttonOptions = pick(
-			this.props.buttonOptions,
-			option => ! ( option.hideForTheme && option.hideForTheme( theme ) )
-		);
-
 		return <Theme
 			key={ 'theme-' + theme.id }
-			buttonContents={ buttonOptions }
+			buttonContents={ this.props.getButtonOptions( theme ) }
 			screenshotClickUrl={ this.props.getScreenshotUrl && this.props.getScreenshotUrl( theme ) }
 			onScreenshotClick={ this.props.onScreenshotClick }
 			onMoreButtonClick={ this.props.onMoreButtonClick }

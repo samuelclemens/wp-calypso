@@ -3,7 +3,8 @@
  */
 var React = require( 'react' ),
 	bindActionCreators = require( 'redux' ).bindActionCreators,
-	connect = require( 'react-redux' ).connect;
+	connect = require( 'react-redux' ).connect,
+	pick = require( 'lodash/object/pick' );
 
 /**
  * Internal dependencies
@@ -165,7 +166,11 @@ var Themes = React.createClass( {
 						siteId={ this.props.siteId }
 						selectedSite={ site }
 						onScreenshotClick={ onScreenshotClick }
-						options={ addTracking( buttonOptions ) }
+						getOptions={ function( theme ) {
+							return pick(
+								addTracking( buttonOptions ),
+								option => ! ( option.hideForTheme && option.hideForTheme( theme ) )
+							); } }
 						trackScrollPage={ this.props.trackScrollPage }
 						tier={ this.props.tier }
 						queryParams={ this.props.queryParams }
