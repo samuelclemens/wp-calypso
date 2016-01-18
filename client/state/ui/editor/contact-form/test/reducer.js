@@ -18,7 +18,7 @@ describe( "editor's contact form state reducer", () => {
 	} );
 
 	it( 'should initialize the state with the provided contact form', () => {
-		const contactForm = {
+		const contactForm = Object.freeze( {
 			to: 'user@example.com',
 			subject: 'here be dragons',
 			fields: [
@@ -27,7 +27,7 @@ describe( "editor's contact form state reducer", () => {
 				{ label: 'Website' },
 				{ label: 'Comment' }
 			]
-		};
+		} );
 
 		const state = reducer( null, {
 			type: CONTACT_FORM_INIT,
@@ -38,14 +38,14 @@ describe( "editor's contact form state reducer", () => {
 	} );
 
 	it( "should add the default new field to the state's fields list", () => {
-		let contactForm = {
+		let contactForm = Object.freeze( {
 			fields: [
 				{ label: 'Name' },
 				{ label: 'Email' },
 				{ label: 'Website' },
 				{ label: 'Comment' }
 			]
-		};
+		} );
 
 		const state = reducer( contactForm, {
 			type: CONTACT_FORM_ADD_DEFAULT_FIELD
@@ -56,14 +56,14 @@ describe( "editor's contact form state reducer", () => {
 	} );
 
 	it( "should remove a field from the state's fields list", () => {
-		const contactForm = {
+		const contactForm = Object.freeze( {
 			fields: [
 				{ label: 'Name' },
 				{ label: 'Email' },
 				{ label: 'Website' },
 				{ label: 'Comment' }
 			]
-		};
+		} );
 
 		const state = reducer( contactForm, {
 			type: CONTACT_FORM_REMOVE_FIELD,
