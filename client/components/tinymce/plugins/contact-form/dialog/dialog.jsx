@@ -69,7 +69,7 @@ export default React.createClass( {
 							index={ index }
 							label={ field.label }
 							onClick={ this.props.onRemove } />
-					 ) ) }
+					) ) }
 				</ul>
 				</div>
 				<FormFieldset>
