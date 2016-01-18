@@ -227,57 +227,51 @@ At this point, you might observe that the visual elements rendered in `<PostDele
 
 #### Fetching components 
 
-Fetching components accept as few props as possible to describe the data needs of the its descendent components. They should be rendered as high in the render hierarchy as possible; if possible, at the route controller. They should act as a pass-through component, rendering their children, but __they should not pass any props to the children__. If a child has data needs, it should be a connected component. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
+Fetching components accept as few props as possible to describe the data needs of the context in which they're used. They ensure that the prerequisite data exists, triggering a network request to retrieve the data if necessary. They should neither accept nor render any children. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
 
-Below is an example of a fetching component and how it might be used in the context of a route rendering.
+The benefits of fetching components are that they (a) are reusable, (b) take advantage of React's lifecycle methods to ensure that data needs are kept in sync, and (c) can be used by [connected "App Components"](https://wpcalypso.wordpress.com/devdocs/app-components) to maintain their self-sufficiency. That they neither accept nor render children eliminates the need for ancestor components to concern themselves with the data needs of leaf components and [can be more performant](https://www.youtube.com/watch?v=KYzlpRvWZ6c&t=1137).
 
-`client/components/data/posts-data/index.jsx`
+Below is an example of a fetching component:
 
 ```jsx
-class PostsData extends Component {
-	constructor( props ) {
-		super( props );
+// client/components/data/query-posts/index.jsx
 
-		if ( ! props.posts ) {
-			props.fetchPosts( props.siteId );
+class QueryPosts extends Component {
+	componentDidMount() {
+		this.ensureHasPosts();
+	}
+
+	componentDidUpdate() {
+		this.ensureHasPosts();
+	}
+
+	ensureHasPosts() {
+		if ( ! this.props.posts && ! this.props.requestingPosts ) {
+			this.props.requestSitePosts( this.props.siteId );
 		}
 	}
 
 	render() {
-		return this.props.children;
+		return null;
 	}
 }
 
 export default connect(
 	( state, ownProps ) => {
 		return {
+			requestingPosts: isRequestingSitePosts( ownProps.siteId ),
 			posts: getSitePosts( ownProps.siteId )
 		};
 	},
 	( dispatch ) => {
 		return bindActionCreators( {
-			fetchPosts
+			requestSitePosts
 		}, dispatch );
 	}
-)( PostsData );
+)( QueryPosts );
 ```
 
-`client/my-sites/controller.js`
-
-```
-page( '/posts/:siteId', ( context ) => {
-	const siteId = context.params.siteId;
-
-	ReactDOM.render(
-		<PostsData siteId={ siteId }>
-			<PostsList siteId={ siteId } />
-		</PostsData>,
-		document.getElementById( 'primary' )
-	);
-} );
-```
-
-Be mindful of the fact that fetching components are an undesirable necessity that we'd like to remove in the future, and as such treat it as though it may eventually be removed altogether. This is why the `siteId` prop is specified on both `<PostsData />` and `<PostsList />` when rendering.
+Then, when creating a component that needs to consume posts data, we can simply include `<QueryPosts />` as a child of that component, and consume the available posts via the same state selectors in the component example shown above (`getSitePosts`).
 
 ### Selectors
 
