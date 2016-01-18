@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { Component } from 'react';
+import defaults from 'lodash/object/defaults';
 
 /**
  * Internal dependencies
@@ -33,16 +34,22 @@ class WpVideoView extends Component {
 		const namedAttrs = shortcode.attrs.named;
 		const defaultWidth = 640;
 		const defaultHeight = defaultWidth * 9 / 16;
-		return {
+
+		return defaults( {
 			videopress_guid: shortcode.attrs.numeric[0],
-			w: parseInt( namedAttrs.w, 10 ) || defaultWidth,
-			h: parseInt( namedAttrs.h, 10 ) || defaultHeight,
+			w: parseInt( namedAttrs.w, 10 ) || undefined,
+			h: parseInt( namedAttrs.h, 10 ) || undefined,
 			autoplay: namedAttrs.autoplay === 'true',
 			hd: namedAttrs.hd === 'true',
 			loop: namedAttrs.loop === 'true',
-			at: parseInt( namedAttrs.at, 10) || 0,
-			defaultLangCode: namedAttrs.defaultlangcode || false
-		};
+			at: parseInt( namedAttrs.at, 10 ),
+			defaultLangCode: namedAttrs.defaultlangcode
+		}, {
+			w: defaultWidth,
+			h: defaultHeight,
+			at: 0,
+			defaultLangCode: false
+		} );
 	}
 
 	getEmbedUrl( attrs ) {
