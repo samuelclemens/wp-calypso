@@ -43,6 +43,9 @@ var ThemesList = React.createClass( {
 			optionsGenerator: function() {
 				return [];
 			},
+			getActionLabel: function() {
+				return '';
+			}
 		};
 	},
 
