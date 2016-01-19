@@ -4,6 +4,7 @@
 import assign from 'lodash/object/assign';
 import mapValues from 'lodash/object/mapValues';
 import pick from 'lodash/object/pick';
+import merge from 'lodash/object/merge';
 
 /**
  * Internal dependencies
@@ -63,23 +64,8 @@ export function getButtonOptions( site, isLoggedOut, actions, letUserSelectSite,
 		},
 	};
 
-	let options = pick( buttonOptions, option => ! option.isHidden );
-	options = mapValues( options, appendLabelAndHeader );
-	return options;
-
-	function appendLabelAndHeader( option, name ) {
-		const actionLabel = actionLabels[ name ];
-
-		if ( ! actionLabel ) {
-			return option;
-		}
-
-		const { label, header } = actionLabel;
-
-		return assign( {}, option, {
-			label, header
-		} );
-	};
+	const options = merge( {}, buttonOptions, actionLabels );
+	return pick( options, option => ! option.isHidden );
 };
 
 export function addTracking( options ) {
