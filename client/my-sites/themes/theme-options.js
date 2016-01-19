@@ -12,6 +12,11 @@ import Helper from 'lib/themes/helpers';
 import actionLabels from './action-labels';
 import config from 'config';
 
+/*
+ * The following can be see as a sort of frontend to the lib/themes/actions
+ * and lib/themes/helpers modules, with different function signatures
+ * streamlined, so they can be used uniformly from my-sites/themes/main.
+ */
 export function getButtonOptions( site, isLoggedOut, actions, letUserSelectSite, showPreview ) {
 	const buttonOptions = {
 		signup: {
