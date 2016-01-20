@@ -12,6 +12,7 @@ var Sidebar = require( 'layout/sidebar' ),
 	SidebarItem = require( 'layout/sidebar/item' ),
 	SidebarMenu = require( 'layout/sidebar/menu' ),
 	config = require( 'config' ),
+	layoutFocus = require( 'lib/layout-focus' ),
 	ProfileGravatar = require( 'me/profile-gravatar' ),
 	eventRecorder = require( 'me/event-recorder' ),
 	observe = require( 'lib/mixins/data-observe' ),
@@ -26,6 +27,11 @@ module.exports = React.createClass( {
 
 	componentDidMount: function() {
 		debug( 'The MeSidebar React component is mounted.' );
+	},
+
+	onNavigate: function() {
+		layoutFocus.setNext( 'content' );
+		window.scrollTo( 0, 0 );
 	},
 
 	render: function() {
@@ -76,6 +82,7 @@ module.exports = React.createClass( {
 							link={ config.isEnabled( 'me/my-profile' ) ? '/me' : '//wordpress.com/me/public-profile' }
 							label={ this.translate( 'My Profile' ) }
 							icon="user"
+							onNavigate={ this.onNavigate }
 						/>
 
 						<SidebarItem
@@ -83,6 +90,7 @@ module.exports = React.createClass( {
 							link={ config.isEnabled( 'me/account' ) ? '/me/account' : '//wordpress.com/me/account' }
 							label={ this.translate( 'Account Settings' ) }
 							icon="cog"
+							onNavigate={ this.onNavigate }
 						/>
 
 						<SidebarItem
@@ -90,6 +98,7 @@ module.exports = React.createClass( {
 							link="/purchases"
 							label={ this.translate( 'Manage Purchases' ) }
 							icon="credit-card"
+							onNavigate={ this.onNavigate }
 						/>
 
 						<SidebarItem
@@ -97,6 +106,7 @@ module.exports = React.createClass( {
 							link={ config.isEnabled( 'me/security' ) ? '/me/security' : '//wordpress.com/me/security' }
 							label={ this.translate( 'Security' ) }
 							icon="lock"
+							onNavigate={ this.onNavigate }
 						/>
 
 						<SidebarItem
@@ -104,6 +114,7 @@ module.exports = React.createClass( {
 							link={ config.isEnabled( 'me/notifications' ) ? '/me/notifications' : '//wordpress.com/me/notifications' }
 							label={ this.translate( 'Notifications' ) }
 							icon="bell"
+							onNavigate={ this.onNavigate }
 						/>
 
 					</ul>
@@ -118,6 +129,7 @@ module.exports = React.createClass( {
 							label={ this.translate( 'Help' ) }
 							external={ config.isEnabled( 'help' ) ? 'false' : 'true' }
 							icon="help-outline"
+							onNavigate={ this.onNavigate }
 						/>
 					</ul>
 				</SidebarMenu>
@@ -134,6 +146,7 @@ module.exports = React.createClass( {
 					link="/me/next"
 					label={ this.translate( 'Next Steps' ) }
 					icon="list-checkmark"
+					onNavigate={ this.onNavigate }
 				/>
 			);
 		}
