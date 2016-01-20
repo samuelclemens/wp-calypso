@@ -60,8 +60,6 @@ module.exports = React.createClass( {
 						<li>{ this.props.plan.feature_2 }</li>
 						<li>{ this.props.plan.feature_3 }</li>
 					</ul>
-					<a href={ comparePlansUrl } onClick={ this.handleLearnMoreClick }
-						className="plan__learn-more">{ this.translate( 'And more…', { context: 'Find out more details about a plan' } ) }</a>
 				</div>
 			);
 		} else {
