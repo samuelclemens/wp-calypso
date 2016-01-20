@@ -35,7 +35,6 @@ var analytics = require( 'analytics' ),
 	SiteStoreActions = require( 'lib/reader-site-store/actions' ),
 	utils = require( 'reader/utils' ),
 	LikeHelper = require( 'reader/like-helper' ),
-	CommentStore = require( 'lib/comment-store/comment-store' ),
 	stats = require( 'reader/stats' ),
 	PostExcerptLink = require( 'reader/post-excerpt-link' ),
 	ShareButton = require( 'reader/share' ),
@@ -102,7 +101,7 @@ FullPostView = React.createClass( {
 
 	// if comments updated and we have not scrolled to the anchor yet, then scroll
 	checkForCommentAnchor: function() {
-		const hash = window.location.hash.substr(1);
+		const hash = window.location.hash.substr( 1 );
 		if ( this.refs.commentList && hash.indexOf( 'comments' ) > -1 && ! this.hasScrolledToAnchor ) {
 			this.scrollToComments();
 		}
@@ -152,6 +151,13 @@ FullPostView = React.createClass( {
 			} else {
 				post = errorPost;
 			}
+		} else {
+			if ( post.site_ID ) {
+				articleClasses.push( 'blog-' + post.site_ID );
+			}
+			if ( post.feed_ID ) {
+				articleClasses.push( 'feed-' + post.feed_ID );
+			}
 		}
 
 		if ( hasFeaturedImage ) {
@@ -166,6 +172,7 @@ FullPostView = React.createClass( {
 			postContent = post.content;
 		}
 
+		/*eslint-disable react/no-danger*/
 		return (
 			<div>
 				<article className={ articleClasses } id="modal-full-post" ref="article">
@@ -190,6 +197,7 @@ FullPostView = React.createClass( {
 				</article>
 			</div>
 		);
+		/*eslint-enable react/no-danger*/
 	},
 
 	_generateButtonClickHandler: function( clickHandler ) {
