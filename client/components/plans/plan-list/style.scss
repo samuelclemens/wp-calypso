@@ -3,3 +3,11 @@
 	text-align: left;
 	@include clear-fix;
 }
+
+plan-list .jetpack_free {
+	display:none;
+}
+
+.plan-list .jetpack_premium, .plan-list .jetpack_business {
+	width:49% !important;
+}
