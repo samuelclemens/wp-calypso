@@ -221,21 +221,39 @@ var PlansCompare = React.createClass( {
 	},
 
 	render: function() {
-		return (
-			<div className={ this.props.className }>
-				{
-					this.props.isInSignup
-					? null
-					: <SidebarNavigation />
-				}
-				<HeaderCake onClick={ this.goBack }>
-					{ this.translate( 'Compare Plans' ) }
-				</HeaderCake>
-				<Card className="plans">
-					{ this.comparisonTable() }
-				</Card>
-			</div>
-		);
+		if ( this.props.selectedSite.jetpack ) {
+			return (
+				<div className={ this.props.className }>
+					{
+						this.props.isInSignup
+						? null
+						: <SidebarNavigation />
+					}
+					<HeaderCake onClick={ this.goBack }>
+						{ this.translate( 'Compare Options' ) }
+					</HeaderCake>
+					<Card className="plans">
+						{ this.comparisonTable() }
+					</Card>
+				</div>
+			);
+		} else {
+			return (
+				<div className={ this.props.className }>
+					{
+						this.props.isInSignup
+						? null
+						: <SidebarNavigation />
+					}
+					<HeaderCake onClick={ this.goBack }>
+						{ this.translate( 'Compare Plans' ) }
+					</HeaderCake>
+					<Card className="plans">
+						{ this.comparisonTable() }
+					</Card>
+				</div>
+			);
+		}
 	}
 } );
 
