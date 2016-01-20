@@ -29,7 +29,8 @@ const options = {
 	marketing: 'marketing',
 	research: 'research',
 	community: 'community',
-	promotion: 'promotion'
+	promotion: 'promotion',
+	news: 'news'
 };
 
 export default React.createClass( {
@@ -98,10 +99,18 @@ export default React.createClass( {
 				</FormFieldset>
 
 				<FormFieldset>
-					<FormLegend>{ this.translate( 'Promotion' ) }</FormLegend>
+					<FormLegend>{ this.translate( 'Promotions' ) }</FormLegend>
 					<FormLabel>
 						<FormCheckbox checked={ this.state.settings.get( options.promotion ) } onChange={ this.toggleSetting.bind( this, options.promotion ) }/>
-						<span>{ this.translate( 'Information on WordPress.com courses and events (online & in-person).' ) }</span>
+						<span>{ this.translate( 'Promotions and deals on upgrades.' ) }</span>
+					</FormLabel>
+				</FormFieldset>
+
+				<FormFieldset>
+					<FormLegend>{ this.translate( 'News' ) }</FormLegend>
+					<FormLabel>
+						<FormCheckbox checked={ this.state.settings.get( options.news ) } onChange={ this.toggleSetting.bind( this, options.news ) }/>
+						<span>{ this.translate( 'WordPress.com news and announcements.' ) }</span>
 					</FormLabel>
 				</FormFieldset>
 
