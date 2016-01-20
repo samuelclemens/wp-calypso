@@ -63,12 +63,21 @@ var Plans = React.createClass( {
 			url += '/' + selectedSite.slug;
 		}
 
-		return (
-			<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
-				<Gridicon icon="clipboard" size={ 18 } />
-				{ this.translate( 'Compare Plans' ) }
-			</a>
-		);
+		if ( this.props.selectedSite.jetpack ) {
+			return (
+				<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
+					<Gridicon icon="clipboard" size={ 18 } />
+					{ this.translate( 'Compare Options' ) }
+				</a>
+			);
+		} else {
+			return (
+				<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
+					<Gridicon icon="clipboard" size={ 18 } />
+					{ this.translate( 'Compare Plans' ) }
+				</a>
+			);
+		}
 	},
 
 	renderTrialCopy: function() {
