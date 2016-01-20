@@ -51,13 +51,28 @@ module.exports = React.createClass( {
 		siteSuffix = this.props.site ? this.props.site.slug : '';
 		comparePlansUrl = this.props.comparePlansUrl ? this.props.comparePlansUrl : '/plans/compare/' + siteSuffix;
 
-		return (
-			<div>
-				<p>{ this.props.plan.shortdesc }</p>
-				<a href={ comparePlansUrl } onClick={ this.handleLearnMoreClick }
-					className="plan__learn-more">{ this.translate( 'Learn more', { context: 'Find out more details about a plan' } ) }</a>
-			</div>
-		);
+		if ( this.props.site.jetpack ) {
+			return (
+				<div>
+					<p>{ this.props.plan.shortdesc }</p>
+					<ul>
+						<li>{ this.props.plan.feature_1 }</li>
+						<li>{ this.props.plan.feature_2 }</li>
+						<li>{ this.props.plan.feature_3 }</li>
+					</ul>
+					<a href={ comparePlansUrl } onClick={ this.handleLearnMoreClick }
+						className="plan__learn-more">{ this.translate( 'And more…', { context: 'Find out more details about a plan' } ) }</a>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					<p>{ this.props.plan.shortdesc }</p>
+					<a href={ comparePlansUrl } onClick={ this.handleLearnMoreClick }
+						className="plan__learn-more">{ this.translate( 'Learn more', { context: 'Find out more details about a plan' } ) }</a>
+				</div>
+			);
+		}
 	},
 
 	showDetails: function() {
