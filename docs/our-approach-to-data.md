@@ -227,51 +227,13 @@ At this point, you might observe that the visual elements rendered in `<PostDele
 
 #### Fetching components 
 
-Fetching components accept as few props as possible to describe the data needs of the context in which they're used. They ensure that the prerequisite data exists, triggering a network request to retrieve the data if necessary. They should neither accept nor render any children. The fetching component itself may be connected to the state tree using `connect`, as it will need to consider whether the necessary data is already present before fetching any new data.
+Fetching components accept as few props as possible to describe the data needs of the context in which they're used. They are responsible for dispatching the actions that fetch the desired data from the WordPress.com REST API. They should neither accept nor render any children.
 
 The benefits of fetching components are that they (a) are reusable, (b) take advantage of React's lifecycle methods to ensure that data needs are kept in sync, and (c) can be used by [connected "App Components"](https://wpcalypso.wordpress.com/devdocs/app-components) to maintain their self-sufficiency. That they neither accept nor render children eliminates the need for ancestor components to concern themselves with the data needs of leaf components and [can be more performant](https://www.youtube.com/watch?v=KYzlpRvWZ6c&t=1137).
 
-Below is an example of a fetching component:
+When creating a component that needs to consume data, we can simply include a fetching component as a child of that component, consuming from the state selectors populated by the results of the network request initiated by the fetching component.
 
-```jsx
-// client/components/data/query-posts/index.jsx
-
-class QueryPosts extends Component {
-	componentDidMount() {
-		this.ensureHasPosts();
-	}
-
-	componentDidUpdate() {
-		this.ensureHasPosts();
-	}
-
-	ensureHasPosts() {
-		if ( ! this.props.posts && ! this.props.requestingPosts ) {
-			this.props.requestSitePosts( this.props.siteId );
-		}
-	}
-
-	render() {
-		return null;
-	}
-}
-
-export default connect(
-	( state, ownProps ) => {
-		return {
-			requestingPosts: isRequestingSitePosts( ownProps.siteId ),
-			posts: getSitePosts( ownProps.siteId )
-		};
-	},
-	( dispatch ) => {
-		return bindActionCreators( {
-			requestSitePosts
-		}, dispatch );
-	}
-)( QueryPosts );
-```
-
-Then, when creating a component that needs to consume posts data, we can simply include `<QueryPosts />` as a child of that component, and consume the available posts via the same state selectors in the component example shown above (`getSitePosts`).
+Refer to the [`<QueryPosts />` component](https://github.com/Automattic/wp-calypso/tree/master/client/components/data/query-posts) as an example of a fetching component. New fetching components should be added to the `components/data` directory, prefixed with `query-` such to distinguish them from existing data components.
 
 ### Selectors
 
