@@ -221,7 +221,7 @@ var PlansCompare = React.createClass( {
 	},
 
 	render: function() {
-		if ( this.props.selectedSite.jetpack ) {
+		if ( this.props.site && this.props.selectedSite.jetpack ) {
 			return (
 				<div className={ this.props.className }>
 					{
