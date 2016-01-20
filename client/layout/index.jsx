@@ -24,6 +24,7 @@ var MasterbarLoggedIn = require( 'layout/masterbar/logged-in' ),
 	connect = require( 'react-redux' ).connect,
 	PulsingDot = require( 'components/pulsing-dot' ),
 	SitesListNotices = require( 'lib/sites-list/notices' ),
+	OfflineStatus = require( 'layout/offline-status' ),
 	PollerPool = require( 'lib/data-poller' ),
 	KeyboardShortcutsMenu,
 	Layout;
@@ -97,6 +98,7 @@ Layout = React.createClass( {
 				{ config.isEnabled( 'keyboard-shortcuts' ) ? <KeyboardShortcutsMenu /> : null }
 				<MasterbarLoggedIn user={ this.props.user } section={ this.props.section } sites={ this.props.sites } />
 				<div className={ loadingClass } ><PulsingDot active={ this.props.isLoading } chunkName={ this.props.chunkName } /></div>
+				{ this.props.connection === 'OFFLINE' && <OfflineStatus /> }
 				<div id="content" className="wp-content">
 					<Welcome isVisible={ showWelcome } closeAction={ this.closeWelcome } additionalClassName="NuxWelcome">
 						<WelcomeMessage welcomeSite={ newestSite } />
@@ -124,7 +126,7 @@ export default connect(
 			section,
 			hasSidebar,
 			chunkName,
-			isOnline: state.application.isOnline
+			connection: state.application.isOnline
 		};
 	}
 )( Layout );
