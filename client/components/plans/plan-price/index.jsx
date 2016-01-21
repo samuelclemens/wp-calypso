@@ -68,15 +68,15 @@ module.exports = React.createClass( {
 					<span className="jetpack-price">{ plan.formatted_original_price }</span>
 					<small className="plan-price__billing-period">
 						{ this.translate( 'cost of individual plugins' ) }
-		      </small>
-		      <span className="jetpack-price">{ this.getPrice() }</span>
-		      <small className="plan-price__billing-period">
-		        { hasDiscount ? this.translate( 'for first year' ) : plan.bill_period_label } (
-		        { plan.saving }
-		        % { this.translate( 'savings' ) })
-		      </small>
-		    </div>
-		  );
+					</small>
+					<span className="jetpack-price">{ this.getPrice() }</span>
+					<small className="plan-price__billing-period">
+						{ hasDiscount ? this.translate( 'for first year' ) : plan.bill_period_label } (
+						{ plan.saving }
+						% { this.translate( 'savings' ) })
+					</small>
+				</div>
+			);
 		} else {
 			return (
 				<div className={ hasDiscount ? "plan-price plan-price__discount" : "plan-price" }>
