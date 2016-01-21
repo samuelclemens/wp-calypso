@@ -3,8 +3,11 @@
  */
 import notices from 'notices';
 import i18n from 'lib/mixins/i18n';
+import wpcom from 'lib/wp';
 
 import {
+	EXPORT_ADVANCED_SETTINGS_FETCH,
+	EXPORT_ADVANCED_SETTINGS_RECEIVE,
 	SET_EXPORT_POST_TYPE,
 	REQUEST_START_EXPORT,
 	REPLY_START_EXPORT,
@@ -22,6 +25,33 @@ export function setPostType( postType ) {
 	return {
 		type: SET_EXPORT_POST_TYPE,
 		postType
+	};
+}
+
+/**
+ * Fetches the available advanced settings for customizing export content
+ * @return {thunk}    An action thunk for fetching the advanced settings
+ */
+export function exportAdvancedSettingsFetch( siteId ) {
+	return ( dispatch ) => {
+		dispatch( {
+			type: EXPORT_ADVANCED_SETTINGS_FETCH
+		} );
+
+		const updateExportSettings =
+			settings => dispatch( exportAdvancedSettingsReceive( siteId, settings ) );
+
+		wpcom
+			.getExportSettings( siteId )
+			.then( updateExportSettings );
+	}
+}
+
+export function exportAdvancedSettingsReceive( siteId, advancedSettings ) {
+	return {
+		type: EXPORT_ADVANCED_SETTINGS_RECEIVE,
+		siteId,
+		advancedSettings
 	};
 }
 
