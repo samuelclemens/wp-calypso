@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
  */
 import Gridicon from 'components/gridicon';
 import ContactFormDialog from './dialog';
-import { initContactForm, addDefaultField, removeField } from 'state/ui/editor/contact-form/actions';
+import { loadForm, addDefaultField, removeField, clearForm } from 'state/ui/editor/contact-form/actions';
 import { serialize, deserialize } from './shortcode-utils';
 
 const wpcomContactForm = editor => {
@@ -32,7 +32,9 @@ const wpcomContactForm = editor => {
 	} );
 
 	editor.addCommand( 'wpcomContactForm', content => {
-		store.dispatch( initContactForm( deserialize( content ) ) );
+		if ( content ) {
+			store.dispatch( loadForm( deserialize( content ) ) );
+		}
 
 		function renderModal( visibility = 'show' ) {
 			render(
@@ -46,11 +48,11 @@ const wpcomContactForm = editor => {
 							store.dispatch( removeField( index ) );
 						},
 						onClose() {
+							store.dispatch( clearForm() );
 							editor.focus();
 							renderModal( 'hide' );
 						},
 						onSave() {
-							//get contact form from state to save
 							const state = store.getState();
 							editor.execCommand( 'mceInsertContent', false, serialize( state.ui.editor.contactForm ) );
 						}

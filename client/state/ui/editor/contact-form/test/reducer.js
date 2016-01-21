@@ -8,11 +8,26 @@ import { assert } from 'chai';
  */
 import reducer from '../reducer';
 import { CONTACT_FORM_DEFAULT, CONTACT_FORM_DEFAULT_NEW_FIELD } from '../constants';
-import { CONTACT_FORM_INIT, CONTACT_FORM_ADD_DEFAULT_FIELD, CONTACT_FORM_REMOVE_FIELD } from '../action-types';
+import { CONTACT_FORM_LOAD_FORM, CONTACT_FORM_ADD_DEFAULT_FIELD, CONTACT_FORM_REMOVE_FIELD, CONTACT_FORM_CLEAR_FORM } from '../action-types';
 
 describe( "editor's contact form state reducer", () => {
 	it( 'should return the default contact form when neither state nor action is provided', () => {
 		const state = reducer( undefined, {} );
+
+		assert.deepEqual( state, CONTACT_FORM_DEFAULT );
+	} );
+
+	it( "should add the default new field to the state's fields list", () => {
+		let contactForm = Object.freeze( {
+			fields: [
+				{ label: 'Name' },
+				{ label: 'Email' }
+			]
+		} );
+
+		const state = reducer( contactForm, {
+			type: CONTACT_FORM_CLEAR_FORM
+		} );
 
 		assert.deepEqual( state, CONTACT_FORM_DEFAULT );
 	} );
@@ -30,7 +45,7 @@ describe( "editor's contact form state reducer", () => {
 		} );
 
 		const state = reducer( null, {
-			type: CONTACT_FORM_INIT,
+			type: CONTACT_FORM_LOAD_FORM,
 			contactForm
 		} );
 
