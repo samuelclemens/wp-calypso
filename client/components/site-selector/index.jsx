@@ -57,6 +57,20 @@ module.exports = React.createClass( {
 		this.setState( { search: terms } );
 	},
 
+	onKeyDown: function( event ) {
+		var visibleSites;
+
+		if ( event.keyCode === 13 ) {
+			// enter key
+			visibleSites = this.getVisibleSites();
+
+			if ( visibleSites.length === 1 && this.props.siteBasePath ) {
+				this.onSiteSelect( visibleSites[ 0 ].slug, event );
+				page( this.getSiteBasePath( visibleSites[ 0 ] ) + '/' + visibleSites[ 0 ].slug );
+			}
+		}
+	},
+
 	onSiteSelect: function( siteSlug, event ) {
 		this.closeSelector();
 		this.props.onSiteSelect( siteSlug );
@@ -69,6 +83,7 @@ module.exports = React.createClass( {
 	},
 
 	closeSelector: function() {
+		this.refs.siteSearch.clear();
 		this.refs.siteSearch.blur();
 	},
 
@@ -101,14 +116,8 @@ module.exports = React.createClass( {
 		return siteBasePath;
 	},
 
-	isSelected: function( site ) {
-		var selectedSite = this.props.selected || this.props.sites.selected;
-		return selectedSite === site.domain || selectedSite === site.slug;
-	},
-
-	renderSiteElements: function() {
-		var allSitesPath = this.props.allSitesPath,
-			sites, siteElements;
+	getVisibleSites: function() {
+		var sites;
 
 		if ( this.state.search ) {
 			sites = this.props.sites.search( this.state.search );
@@ -119,6 +128,19 @@ module.exports = React.createClass( {
 		if ( this.props.filter ) {
 			sites = sites.filter( this.props.filter );
 		}
+
+		return sites;
+	},
+
+	isSelected: function( site ) {
+		var selectedSite = this.props.selected || this.props.sites.selected;
+		return selectedSite === site.domain || selectedSite === site.slug;
+	},
+
+	renderSiteElements: function() {
+		var allSitesPath = this.props.allSitesPath,
+			sites = this.getVisibleSites(),
+			siteElements;
 
 		// Render sites
 		siteElements = sites.map( function( site ) {
@@ -187,7 +209,13 @@ module.exports = React.createClass( {
 
 		return (
 			<div className={ selectorClass } ref="siteSelector">
-				<Search ref="siteSearch" onSearch={ this.onSearch } autoFocus={ this.props.autoFocus } disabled={ ! sitesInitialized } />
+				<Search
+					ref="siteSearch"
+					onSearch={ this.onSearch }
+					autoFocus={ this.props.autoFocus }
+					disabled={ ! sitesInitialized }
+					onKeyDown={ this.onKeyDown }
+				/>
 
 				<div className="site-selector__sites">
 					{ siteElements.length ? siteElements :
