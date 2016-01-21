@@ -20,24 +20,8 @@ var PopoverMenu = require( 'components/popover/menu' ),
  */
 var ThemeMoreButton = React.createClass( {
 	propTypes: {
-		theme: React.PropTypes.shape( {
-			// Theme ID (theme-slug)
-			id: React.PropTypes.string.isRequired,
-			// Theme name
-			name: React.PropTypes.string.isRequired,
-			// Theme screenshot URL
-			screenshot: React.PropTypes.string,
-			// Theme price (pre-formatted string) -- empty string indicates free theme
-			price: React.PropTypes.string,
-			// If true, the user has 'purchased' the theme
-			purchased: React.PropTypes.bool,
-			// If true, highlight this theme as active
-			active: React.PropTypes.bool,
-			author: React.PropTypes.string,
-			author_uri: React.PropTypes.string,
-			demo_uri: React.PropTypes.string,
-			stylesheet: React.PropTypes.string
-		} ),
+		// See Theme component propTypes
+		theme: React.PropTypes.object,
 		// Index of theme in results list
 		index: React.PropTypes.number,
 		// Options to populate the popover menu with
