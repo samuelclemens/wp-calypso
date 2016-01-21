@@ -42,10 +42,6 @@ function debounce( fn, delay ) {
 	}
 }
 
-var sendErrorsToApiDebounced = debounce( function( message, scriptUrl, lineNumber, columnNumber, error ) {
-	sendErrorsToApi( message, scriptUrl, lineNumber, columnNumber, error );
-}, 100 );
-
 function sendErrorsToApi( message, scriptUrl, lineNumber, columnNumber, error ) {
 	var xhr = new XMLHttpRequest(),
 		params;
@@ -69,5 +65,7 @@ if ( isLocalStorageNameSupported && ( localStorage.getItem( 'log-errors' ) !== u
 	localStorage.setItem( 'log-errors', true );
 
 	// set up handler to POST errors
-	window.onerror = sendErrorsToApiDebounced;
+	window.onerror = debounce( function( message, scriptUrl, lineNumber, columnNumber, error ) {
+		sendErrorsToApi( message, scriptUrl, lineNumber, columnNumber, error );
+	}, 100 );
 }
