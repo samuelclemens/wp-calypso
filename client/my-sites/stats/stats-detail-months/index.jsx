@@ -11,6 +11,8 @@ import toggle from '../mixin-toggle';
 import observe from 'lib/mixins/data-observe';
 import Card from 'components/card';
 import Gridicon from 'components/gridicon';
+import StatsModulePlaceholder from '../stats-module/placeholder';
+import StatsModuleContent from '../stats-module/content-text';
 
 export default React.createClass( {
 	displayName: 'StatsPostDetailMonths',
@@ -41,8 +43,9 @@ export default React.createClass( {
 		const { showInfo, noData } = this.state;
 		const data = postViewsList.response;
 		const infoIcon = showInfo ? 'info' : 'info-outline';
+		const isLoading = postViewsList.isLoading();
 		const classes = {
-			'is-loading': this.props.postViewsList.isLoading(),
+			'is-loading': isLoading,
 			'is-showing-info': showInfo,
 			'has-no-data': noData
 		};
@@ -128,32 +131,27 @@ export default React.createClass( {
 						</li>
 					</ul>
 				</div>
-				<div className="module-content">
-					<div className="module-content-text module-content-text-info">
-						<p className="message">
-							{ this.translate( 'No views yet', { context: 'Empty info box title for post stats page in Stats' } ) }
-						</p>
-						<p>
-							{ this.translate( 'This panel gives you an overview of how many views your website gets on average.', { context: 'Info box description for post stats page in Stats' } ) }
-						</p>
-						<p className="legend achievement">{
-							this.translate(
-								'%(value)s = The all-time highest value.',
-								{ args:
-									{ value: ( this.numberFormat( highest ) ) },
-									context: 'Legend for post stats page in Stats'
-								}
-							)
-						}</p>
-					</div>
-					<div className="module-placeholder is-void"></div>
-					<div className="module-content-table">
-						<div className="module-content-table-scroll">
-							<table cellPadding="0" cellSpacing="0">
-								{ tableHeader }
-								{ tableBody }
-							</table>
-						</div>
+				<StatsModuleContent className="module-content-text-info">
+					<p>
+						{ this.translate( 'This panel gives you an overview of how many views your website gets on average.', { context: 'Info box description for post stats page in Stats' } ) }
+					</p>
+					<span className="legend achievement">{
+						this.translate(
+							'%(value)s = The all-time highest value.',
+							{ args:
+								{ value: ( this.numberFormat( highest ) ) },
+								context: 'Legend for post stats page in Stats'
+							}
+						)
+					}</span>
+				</StatsModuleContent>
+				<StatsModulePlaceholder isLoading={ isLoading } />
+				<div className="module-content-table">
+					<div className="module-content-table-scroll">
+						<table cellPadding="0" cellSpacing="0">
+							{ tableHeader }
+							{ tableBody }
+						</table>
 					</div>
 				</div>
 			</Card>
