@@ -49,7 +49,7 @@ module.exports = React.createClass( {
 			);
 		}
 
-		siteSuffix = this.props.site ? this.props.site.slug : '';
+		siteSuffix = site ? site.slug : '';
 		comparePlansUrl = this.props.comparePlansUrl ? this.props.comparePlansUrl : '/plans/compare/' + siteSuffix;
 
 		if ( site && site.jetpack ) {
