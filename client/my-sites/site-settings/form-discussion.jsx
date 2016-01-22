@@ -116,8 +116,8 @@ module.exports = React.createClass( {
 
 	otherCommentSettings: function() {
 		return (
-			<FormFieldset>
-				<FormLegend>{ this.translate( 'Other comment settings' ) }</FormLegend>
+			<FormFieldset className="has-divider">
+				<FormLabel>{ this.translate( 'Other comment settings' ) }</FormLabel>
 				<FormLabel>
 					<FormCheckbox
 						name="require_name_email"
@@ -346,7 +346,7 @@ module.exports = React.createClass( {
 
 	commentModerationSettings: function() {
 		return (
-			<FormFieldset>
+			<FormFieldset className="has-divider">
 				<FormLabel htmlFor="moderation_keys">{ this.translate( 'Comment Moderation' ) }</FormLabel>
 				<p>{
 					this.translate( 'Hold a comment in the queue if it contains {{numberOfLinks /}} or more links. (A common characteristic of comment spam is a large number of hyperlinks.)', {
