@@ -3,3 +3,7 @@
 	text-align: left;
 	@include clear-fix;
 }
+
+.plans .jetpack_free {
+	display:none !important;
+}
