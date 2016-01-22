@@ -59,6 +59,12 @@ var Plans = React.createClass( {
 		var url = '/plans/compare',
 			selectedSite = this.props.selectedSite;
 
+		var compareString = this.translate( 'Compare Plans' );
+
+		if ( selectedSite.jetpack ) {
+			compareString = this.translate( 'Compare Options' );
+		}
+
 		if ( this.props.plans.get().length <= 0 ) {
 			return '';
 		}
@@ -67,21 +73,12 @@ var Plans = React.createClass( {
 			url += '/' + selectedSite.slug;
 		}
 
-		if ( this.props.selectedSite.jetpack ) {
-			return (
-				<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
-					<Gridicon icon="clipboard" size={ 18 } />
-					{ this.translate( 'Compare Options' ) }
-				</a>
-			);
-		} else {
-			return (
-				<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
-					<Gridicon icon="clipboard" size={ 18 } />
-					{ this.translate( 'Compare Plans' ) }
-				</a>
-			);
-		}
+		return (
+			<a href={ url } className="compare-plans-link" onClick={ this.recordComparePlansClick }>
+				<Gridicon icon="clipboard" size={ 18 } />
+				{ compareString }
+			</a>
+		);
 	},
 
 	redirectToDefault() {
