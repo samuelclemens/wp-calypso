@@ -7,7 +7,7 @@ var React = require( 'react' ),
 /**
  * Internal dependencies
  */
-var Plan = require( 'components/plans/plan' ),
+var Plan = require( 'components/plans/jp-plan' ),
 	Card = require( 'components/card' ),
 	abtest = require( 'lib/abtest' ).abtest,
 	isJpphpBundle = require( 'lib/products-values' ).isJpphpBundle,
