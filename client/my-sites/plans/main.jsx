@@ -22,6 +22,7 @@ var analytics = require( 'analytics' ),
 	Notice = require( 'components/notice' ),
 	observe = require( 'lib/mixins/data-observe' ),
 	paths = require( './paths' ),
+	JPPlanList = require( 'components/plans/jp-plan-list' ),
 	PlanList = require( 'components/plans/plan-list' ),
 	PlanOverview = require( './plan-overview' ),
 	preventWidows = require( 'lib/formatting' ).preventWidows,
@@ -147,34 +148,65 @@ var Plans = React.createClass( {
 			);
 		}
 
-		return (
-			<div>
-				{ this.renderNotice() }
+		if ( this.props.selectedSite.jetpack ) {
+			return (
+				<div>
+					{ this.renderNotice() }
 
-				<Main>
-					<SidebarNavigation />
+					<Main>
+						<SidebarNavigation />
 
-					<div id="plans" className="plans has-sidebar">
-						<UpgradesNavigation
-							path={ this.props.context.path }
-							cart={ this.props.cart }
-							selectedSite={ this.props.selectedSite } />
+						<div id="plans" className="plans has-sidebar">
+							<UpgradesNavigation
+								path={ this.props.context.path }
+								cart={ this.props.cart }
+								selectedSite={ this.props.selectedSite } />
 
-						{ this.renderTrialCopy() }
+							{ this.renderTrialCopy() }
 
-						<PlanList
-							sites={ this.props.sites }
-							plans={ this.props.plans.get() }
-							enableFreeTrials={ true }
-							sitePlans={ this.props.sitePlans }
-							onOpen={ this.openPlan }
-							onSelectPlan={ this.props.onSelectPlan }
-							cart={ this.props.cart } />
-						{ ! hasJpphpBundle && this.comparePlansLink() }
-					</div>
-				</Main>
-			</div>
-		);
+							<JPPlanList
+								sites={ this.props.sites }
+								plans={ this.props.plans.get() }
+								enableFreeTrials={ true }
+								sitePlans={ this.props.sitePlans }
+								onOpen={ this.openPlan }
+								onSelectPlan={ this.props.onSelectPlan }
+								cart={ this.props.cart } />
+							{ ! hasJpphpBundle && this.comparePlansLink() }
+						</div>
+					</Main>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					{ this.renderNotice() }
+
+					<Main>
+						<SidebarNavigation />
+
+						<div id="plans" className="plans has-sidebar">
+							<UpgradesNavigation
+								path={ this.props.context.path }
+								cart={ this.props.cart }
+								selectedSite={ this.props.selectedSite } />
+
+							{ this.renderTrialCopy() }
+
+							<PlanList
+								sites={ this.props.sites }
+								plans={ this.props.plans.get() }
+								enableFreeTrials={ true }
+								sitePlans={ this.props.sitePlans }
+								onOpen={ this.openPlan }
+								onSelectPlan={ this.props.onSelectPlan }
+								cart={ this.props.cart } />
+							{ ! hasJpphpBundle && this.comparePlansLink() }
+						</div>
+					</Main>
+				</div>
+			);
+		}
 	}
 } );
 
