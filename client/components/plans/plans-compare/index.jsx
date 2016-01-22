@@ -221,7 +221,7 @@ var PlansCompare = React.createClass( {
 	},
 
 	render: function() {
-		var compareString = 'Compare Plans';
+		var compareString = this.translate( 'Compare Plans' );
 
 		if ( this.props.selectedSite.jetpack ) {
 			compareString = this.translate( 'Compare Options' );
