@@ -3,6 +3,7 @@ var config = require( 'config' ),
 
 function getSectionsModule( sections ) {
 	var dependencies = '',
+		loadSection = '',
 		sectionLoaders = '';
 
 	if ( config.isEnabled( 'code-splitting' ) ) {
@@ -17,6 +18,7 @@ function getSectionsModule( sections ) {
 		].join( '\n' );
 
 		sections.forEach( function( section ) {
+			loadSection += singleEnsure( section.name );
 			section.paths.forEach( function( path ) {
 				sectionLoaders += splitTemplate( path, section.module, section.name );
 			} );
@@ -33,6 +35,11 @@ function getSectionsModule( sections ) {
 		'	},',
 		'	load: function() {',
 		'		' + sectionLoaders,
+		'	},',
+		'	preload: function( section ) {',
+		'		switch ( section ) {',
+		'		' + loadSection,
+		'		}',
 		'	}',
 		'};'
 	].join( '\n' );
@@ -64,6 +71,7 @@ function splitTemplate( path, module, chunkName ) {
 		'		return next();',
 		'	}',
 		'	context.store.dispatch( { type: "SET_SECTION", isLoading: true } );',
+		'	context.store.dispatch( { type: "SET_SECTION", chunkName: ' + JSON.stringify( chunkName ) + ' } );',
 		'	require.ensure([], function( require, error ) {',
 		'		if ( error ) {',
 		'			if ( ! LoadingError.isRetry() ) {',
@@ -90,6 +98,16 @@ function splitTemplate( path, module, chunkName ) {
 
 function requireTemplate( module ) {
 	return 'require( ' + JSON.stringify( module ) + ' )();\n';
+}
+
+function singleEnsure( chunkName ) {
+	var result = [
+		'case ' + JSON.stringify( chunkName ) + ':',
+		'	return require.ensure([], function() {}, ' + JSON.stringify( chunkName ) + ' );',
+		'	break;\n'
+	];
+
+	return result.join( '\n' );
 }
 
 module.exports = function( content ) {
