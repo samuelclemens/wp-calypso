@@ -1,21 +1,27 @@
 /**
+ * External dependencies
+ */
+import pick from 'lodash/object/pick';
+import identity from 'lodash/utility/identity';
+
+/**
  * Internal dependencies
  */
 import Shortcode from 'lib/shortcode';
 
-export function serialize( contactForm ) {
-	const fields = contactForm.fields.map( field => {
+export function serialize( { to, subject, fields = [] } = {} ) {
+	const content = fields.map( ( { label, type, required } ) => {
+		if ( ! label || ! type ) {
+			return;
+		}
+
 		let fieldShortcode = {
 			tag: 'contact-field',
 			type: 'self-closing',
-			attrs: {
-				label: field.label,
-				type: field.type
-			}
+			attrs: { label, type }
 		};
 
-		//only add required field when specified.
-		if ( field.required ) {
+		if ( required ) {
 			fieldShortcode.attrs.required = 1;
 		}
 
@@ -25,11 +31,8 @@ export function serialize( contactForm ) {
 	return Shortcode.stringify( {
 		tag: 'contact-form',
 		type: 'closed',
-		content: fields,
-		attrs: {
-			to: contactForm.to,
-			subject: contactForm.subject
-		}
+		content,
+		attrs: pick( { to, subject }, identity )
 	} );
 };
 
@@ -38,16 +41,23 @@ export function deserialize( shortcode ) {
 		return null;
 	}
 
-	let settings = Shortcode.parse( shortcode );
-	let { to, subject } = settings.attrs.named;
-	let fieldsShortcode = settings.content;
-	let fields = [];
-	let result;
+	const parsed = Shortcode.parse( shortcode );
 
-	while ( fieldsShortcode && ( result = Shortcode.next( 'contact-field', fieldsShortcode ) ) ) {
-		fields.push( result.shortcode.attrs.named );
-		fieldsShortcode = fieldsShortcode.slice( result.index + result.content.length )
+	if ( parsed ) {
+		return ( { attrs: { named: { to, subject } = {} } = {}, content } ) => {
+			let fields = [];
+			let field;
+
+			while ( content && ( field = Shortcode.next( 'contact-field', content ) ) ) {
+				if ( 'attrs' in field.shortcode ) {
+					fields.push( field.shortcode.attrs.named );
+				}
+				content = content.slice( field.index + field.content.length )
+			}
+
+			return pick( { to, subject, fields }, identity );
+		}( parsed );
 	}
 
-	return { to, subject, fields };
+	return {};
 }
