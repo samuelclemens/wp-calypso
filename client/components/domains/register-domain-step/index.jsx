@@ -82,8 +82,8 @@ var RegisterDomainStep = React.createClass( {
 		}
 	},
 
-	componentDidUpdate: function( prevProps ) {
-		if ( this.props.selectedSite && this.props.selectedSite.domain !== prevProps.selectedSite.domain ) {
+	componentWillReceiveProps: function( nextProps ) {
+		if ( this.props.selectedSite && this.props.selectedSite.domain !== nextProps.selectedSite.domain ) {
 			this.setState( this.getInitialState() );
 			this.focusSearchCard();
 			this.fetchDefaultSuggestions();
