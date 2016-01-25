@@ -2,6 +2,7 @@
  * External dependencies
  */
 var React = require( 'react' ),
+	ReactDom = require( 'react-dom' ),
 	page = require( 'page' ),
 	noop = require( 'lodash/utility/noop' ),
 	classNames = require( 'classnames' );
@@ -64,6 +65,7 @@ module.exports = React.createClass( {
 		this.closeSelector();
 		this.props.onSiteSelect( siteSlug );
 		this.props.onClose( event );
+		ReactDom.findDOMNode( this.refs.selector ).scrollTop = 0;
 
 		// ignore mouse events as the default page() click event will handle navigation
 		if ( this.props.siteBasePath && event.type !== 'mouseup' ) {
@@ -246,10 +248,10 @@ module.exports = React.createClass( {
 		} );
 
 		return (
-			<div className={ selectorClass } ref="siteSelector">
+			<div className={ selectorClass }>
 				<Search ref="siteSearch" onSearch={ this.onSearch } autoFocus={ this.props.autoFocus } disabled={ ! sitesInitialized } />
 
-				<div className="site-selector__sites">
+				<div className="site-selector__sites" ref="selector">
 					{ this.renderRecentSites() }
 					{ siteElements }
 				</div>
