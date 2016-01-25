@@ -11,7 +11,8 @@ var React = require( 'react' ),
 	page = require( 'page' ),
 	url = require( 'url' ),
 	qs = require( 'querystring' ),
-	injectTapEventPlugin = require( 'react-tap-event-plugin' );
+	injectTapEventPlugin = require( 'react-tap-event-plugin' ),
+	localforage = require( 'localforage' );
 
 /**
  * Internal dependencies
@@ -140,8 +141,6 @@ function loadDevModulesAndBoot() {
 }
 
 function boot() {
-	var layoutSection, layout, layoutElement, reduxStore, validSections = [];
-
 	init();
 
 	// When the user is bootstrapped, we also bootstrap the
@@ -161,8 +160,39 @@ function boot() {
 
 	translatorJumpstart.init();
 
-	reduxStore = createReduxStore();
+	localforage.config( {
+		name: 'calypso',
+		storeName: 'calypso_store',
+		description: 'Calypso Storage'
+	} );
+	localforage.getItem( 'redux-state', ( error, initialState ) => {
+		let reduxStore;
+		if ( error ) {
+			debug( 'failed to load initial redux-store state', error );
+			reduxStore = createReduxStore();
+		} else {
+			debug( 'loading redux-store with initial state', initialState );
+			reduxStore = createReduxStore( initialState || {} );
+		}
 
+		reduxStore.subscribe( function() {
+			let state = Object.assign( {}, reduxStore.getState() );
+			//remove dirty parts of the redux tree
+			delete state.sites;
+			delete state.themes;
+			localforage.setItem( 'redux-state', state, ( setError ) => {
+				if ( setError ) {
+					debug( 'failed to set redux-store state', setError );
+				}
+			} );
+		} );
+
+		reduxStoreReady( reduxStore );
+	} );
+}
+
+function reduxStoreReady( reduxStore ) {
+	let layoutSection, layout, layoutElement, validSections = [];
 	if ( user.get() ) {
 		// When logged in the analytics module requires user and superProps objects
 		// Inject these here
@@ -229,15 +259,15 @@ function boot() {
 		// Bypass this global handler for legacy routes
 		// to avoid bumping stats and changing focus to the content
 		if ( /.php$/.test( path ) ||
-				/^\/?$/.test( path ) && ! config.isEnabled( 'reader' ) ||
-				/^\/my-stats/.test( path ) ||
-				/^\/(post\b|page\b)/.test( path ) && ! config.isEnabled( 'post-editor' ) ||
-				/^\/notifications/.test( path ) ||
-				/^\/themes/.test( path ) ||
-				/^\/manage/.test( path ) ||
-				/^\/plans/.test( path ) && ! config.isEnabled( 'manage/plans' ) ||
-				/^\/me/.test( path ) && ! /^\/me\/billing/.test( path ) &&
-				! /^\/me\/next/.test( path ) && ! config.isEnabled( 'me/my-profile' ) ) {
+			/^\/?$/.test( path ) && ! config.isEnabled( 'reader' ) ||
+			/^\/my-stats/.test( path ) ||
+			/^\/(post\b|page\b)/.test( path ) && ! config.isEnabled( 'post-editor' ) ||
+			/^\/notifications/.test( path ) ||
+			/^\/themes/.test( path ) ||
+			/^\/manage/.test( path ) ||
+			/^\/plans/.test( path ) && ! config.isEnabled( 'manage/plans' ) ||
+			/^\/me/.test( path ) && ! /^\/me\/billing/.test( path ) &&
+			! /^\/me\/next/.test( path ) && ! config.isEnabled( 'me/my-profile' ) ) {
 			return next();
 		}
 
