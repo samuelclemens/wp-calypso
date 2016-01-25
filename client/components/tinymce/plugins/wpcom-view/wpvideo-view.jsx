@@ -44,7 +44,7 @@ class WpVideoView extends Component {
 			autoplay: namedAttrs.autoplay === 'true',
 			hd: namedAttrs.hd === 'true',
 			loop: namedAttrs.loop === 'true',
-			at: parseInt( namedAttrs.at, 10 ),
+			at: parseInt( namedAttrs.at, 10 ) || undefined,
 			defaultLangCode: namedAttrs.defaultlangcode
 		}, {
 			w: defaultWidth,
