@@ -61,22 +61,24 @@ const getMockBusinessPluginItems = () => {
 	} );
 }
 
-const hasRestrictedAccess = ( site ) => {
-	let pluginPageError;
-
-	site = site || sites.getSelectedSite();
-
-	const wpcomPluginPageError = {
+const getWpcomPluginPageError = ( siteSlug ) => {
+	return {
 		title: i18n.translate( 'Want to add a store to your site?' ),
 		line: i18n.translate( 'Support for Shopify, Ecwid, and Gumroad is now available for WordPress.com Business.' ),
 		action: i18n.translate( 'Upgrade Now' ),
-		actionURL: '/plans/',
+		actionURL: '/plans/' + siteSlug,
 		illustration: '/calypso/images/drake/drake-whoops.svg',
 		actionCallback: () => {
 			analytics.tracks.recordEvent( 'calypso_upgrade_nudge_cta_click', { cta_name: 'business_plugins' } );
 		},
 		featureExample: getMockBusinessPluginItems()
 	};
+}
+
+const hasRestrictedAccess = ( site ) => {
+	let pluginPageError;
+
+	site = site || sites.getSelectedSite();
 
 	// Display a 404 to users that don't have the rights to manage plugins
 	if ( hasErrorCondition( site, 'notRightsToManagePlugins' ) ) {
@@ -112,14 +114,13 @@ const hasRestrictedAccess = ( site ) => {
 
 			case 'drake':
 			default:
-				pluginPageError = wpcomPluginPageError;
-				pluginPageError.actionUrl = '/plans/' + site.slug;
+				pluginPageError = getWpcomPluginPageError( site.slug );
 				break;
 		}
 	}
 
 	if ( ! sites.hasSiteWithPlugins() && ! site ) {
-		pluginPageError = wpcomPluginPageError;
+		pluginPageError = getWpcomPluginPageError();
 	}
 
 	return pluginPageError;
