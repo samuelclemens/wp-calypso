@@ -10,11 +10,13 @@ var React = require( 'react' ),
  */
 var analytics = require( 'analytics' ),
 	Gridicon = require( 'components/gridicon' ),
+	JetpackPlanDetails = require( 'my-sites/plans/jetpack-plan-details' ),
 	PlanActions = require( 'components/plans/plan-actions' ),
 	PlanHeader = require( 'components/plans/plan-header' ),
 	PlanPrice = require( 'components/plans/plan-price' ),
 	PlanDiscountMessage = require( 'components/plans/plan-discount-message' ),
-	Card = require( 'components/card' );
+	Card = require( 'components/card' ),
+	WpcomPlanDetails = require( 'my-sites/plans/wpcom-plan-details' );
 
 module.exports = React.createClass( {
 	displayName: 'Plan',
@@ -54,24 +56,16 @@ module.exports = React.createClass( {
 
 		if ( site && site.jetpack ) {
 			return (
-				<div>
-					<p>{ plan.shortdesc }</p>
-					<ul>
-						<li>{ plan.feature_1 }</li>
-						<li>{ plan.feature_2 }</li>
-						<li>{ plan.feature_3 }</li>
-					</ul>
-				</div>
-			);
-		} else {
-			return (
-				<div>
-					<p>{ plan.shortdesc }</p>
-					<a href={ comparePlansUrl } onClick={ this.handleLearnMoreClick }
-						className="plan__learn-more">{ this.translate( 'Learn more', { context: 'Find out more details about a plan' } ) }</a>
-				</div>
+				<JetpackPlanDetails plan={ plan } />
 			);
 		}
+
+		return (
+			<WpcomPlanDetails
+				comparePlansUrl={ comparePlansUrl }
+				handleLearnMoreClick={ this.handleLearnMoreClick }
+				plan={ plan } />
+		);
 	},
 
 	showDetails: function() {
