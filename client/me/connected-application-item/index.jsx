@@ -153,7 +153,6 @@ module.exports = React.createClass( {
 					</a>
 				</p>
 
-
 				{ this.translate( '{{detailTitle}}Authorized On{{/detailTitle}}{{detailDescription}}%(date)s{{/detailDescription}}', {
 					components: {
 						detailTitle: <h2 />,
@@ -163,15 +162,13 @@ module.exports = React.createClass( {
 						date: this.moment( this.props.connection.authorized ).format( 'MMM D, YYYY @ h:mm a' )
 					}
 				} ) }
-
-				<h2>
-					{ this.translate( 'Access Permissions' ) }
-				</h2>
-
 				<p>
 					{ this.renderScopeMessage() }
 				</p>
 
+				<h2>
+					{ this.translate( 'Access Permissions' ) }
+				</h2>
 				<p>
 					{ this.props.connection.permissions.map( function( permission ) {
 						return (
@@ -182,7 +179,7 @@ module.exports = React.createClass( {
 							</span>
 						);
 					}, this ) }
-				</p>				
+				</p>
 			</div>
 		);
 	},
@@ -203,7 +200,6 @@ module.exports = React.createClass( {
 	},
 
 	render: function() {
-
 		let classes = classNames( {
 			'connected-application-item': true,
 			'is-placeholder': this.props.isPlaceholder
