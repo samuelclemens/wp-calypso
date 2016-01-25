@@ -73,7 +73,7 @@ module.exports = React.createClass( {
 					<small className="plan-price__billing-period">
 						{ hasDiscount ? this.translate( 'for first year' ) : plan.bill_period_label } (
 						{ plan.saving }
-						{ this.translate( '% savings', { context: 'A percentage discoung, eg: 20% savings' } ) })
+						{ this.translate( '% savings', { context: 'A percentage discount, eg: 20% savings' } ) })
 					</small>
 				</div>
 			);
