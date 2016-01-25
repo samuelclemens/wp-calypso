@@ -16,11 +16,9 @@ import get from 'lodash/object/get';
 /**
  * Internal dependencies
  */
-import { abtest } from 'lib/abtest';
 import Main from 'components/main';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
 import pluginsAccessControl from 'my-sites/plugins/access-control';
-import { isBusiness } from 'lib/products-values';
 import PluginItem from './plugin-item/plugin-item';
 import SectionNav from 'components/section-nav';
 import NavTabs from 'components/section-nav/tabs';
