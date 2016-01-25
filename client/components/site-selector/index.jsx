@@ -11,6 +11,7 @@ var React = require( 'react' ),
  */
 var AllSites = require( 'my-sites/all-sites' ),
 	Button = require( 'components/button' ),
+	Count = require( 'components/count' ),
 	Gridicon = require( 'components/gridicon' ),
 	Site = require( 'my-sites/site' ),
 	SitePlaceholder = require( 'my-sites/site/placeholder' ),
@@ -175,7 +176,8 @@ module.exports = React.createClass( {
 			return (
 				<div>
 					<span className="site-selector__heading">
-						All Sites
+						{ this.translate( 'All Sites' ) }
+						<Count count={ user.get().visible_site_count } />
 					</span>
 					{ siteElements }
 				</div>
@@ -219,9 +221,7 @@ module.exports = React.createClass( {
 
 		return (
 			<div>
-				<span className="site-selector__heading">
-					Recent Sites
-				</span>
+				<span className="site-selector__heading">{ this.translate( 'Recent Sites' ) }</span>
 				{ recentSites }
 			</div>
 		);
