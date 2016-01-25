@@ -138,9 +138,13 @@ module.exports = React.createClass( {
 		}
 
 		return (
-			<div>
-				<p>{ this.translate( 'Scan your WordPress site for known security threats.' ) }</p>
-				<p>{ this.translate( 'By allowing Jetpack Scan to access your site via SSH, you enable us to scan your server for security threats. As soon as we encounter potentially malicious code, we will alert you by email.' ) }</p>
+			<div className="site-settings__jetpack-prompt">
+				<img src="/calypso/images/jetpack/illustration-jetpack-scan.svg" width="128" height="128" />
+
+				<div className="site-settings__jetpack-prompt-text">
+					<p>{ this.translate( 'Scan your WordPress site for known security threats.' ) }</p>
+					<p>{ this.translate( 'By allowing Jetpack Scan to access your site via SSH, you enable us to scan your server for security threats. As soon as we encounter potentially malicious code, we will alert you by email.' ) }</p>
+				</div>
 			</div>
 		);
 	},
@@ -452,7 +456,7 @@ module.exports = React.createClass( {
 					disabled={ this.disableForm() }
 					onClick={ this.toggleScan }
 					>
-					{ this.state.togglingModule ? this.translate( 'Activating…' ) : this.translate( 'Activate Scan' ) }
+					{ this.state.togglingModule ? this.translate( 'Activating…' ) : this.translate( 'Activate' ) }
 				</Button>
 			);
 		}
