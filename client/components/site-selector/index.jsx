@@ -167,7 +167,11 @@ module.exports = React.createClass( {
 			);
 		}
 
-		if ( this.props.groups ) {
+		if ( ! siteElements.length ) {
+			return <div className="site-selector__no-results">{ this.translate( 'No sites found' ) }</div>;
+		}
+
+		if ( this.props.groups && ! this.state.search ) {
 			return (
 				<div>
 					<span className="site-selector__heading">
@@ -184,7 +188,7 @@ module.exports = React.createClass( {
 	renderRecentSites: function() {
 		const sites = this.props.sites.getRecentlySelected();
 
-		if ( ! sites ) {
+		if ( ! sites || this.state.search ) {
 			return null;
 		}
 
@@ -247,7 +251,6 @@ module.exports = React.createClass( {
 				<div className="site-selector__sites">
 					{ this.renderRecentSites() }
 					{ siteElements }
-					<div className="site-selector__no-results">{ this.translate( 'No sites found' ) }</div>
 				</div>
 
 				{ this.props.showAddNewSite ?
