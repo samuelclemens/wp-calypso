@@ -193,7 +193,7 @@ module.exports = React.createClass( {
 	renderRecentSites: function() {
 		const sites = this.props.sites.getRecentlySelected();
 
-		if ( ! sites || this.state.search || ! this.props.groups ) {
+		if ( ! sites || this.state.search || ! this.props.groups || user.get().visible_site_count < 6 ) {
 			return null;
 		}
 
