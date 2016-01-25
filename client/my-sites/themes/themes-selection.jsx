@@ -22,9 +22,9 @@ const ThemesSelection = React.createClass( {
 	mixins: [ urlSearch ],
 
 	propTypes: {
-		sites: PropTypes.oneOfType( [
-			PropTypes.object,
-			PropTypes.bool
+		selectedSite: React.PropTypes.oneOfType( [
+			React.PropTypes.object,
+			React.PropTypes.bool
 		] ).isRequired,
 		siteId: PropTypes.string,
 		search: PropTypes.string,
@@ -37,7 +37,7 @@ const ThemesSelection = React.createClass( {
 
 	getInitialState: function() {
 		return {
-			tier: this.props.tier || config.isEnabled( 'premium-themes' ) ? 'all' : 'free'
+			tier: this.props.tier || ( config.isEnabled( 'upgrades/premium-themes' ) ? 'all' : 'free' )
 		};
 	},
 
@@ -75,7 +75,7 @@ const ThemesSelection = React.createClass( {
 	},
 
 	onScreenshotClick( theme, resultsRank ) {
-		const site = this.props.sites.getSelectedSite();
+		const site = this.props.selectedSite;
 
 		Helper.trackClick( 'theme', 'screenshot' );
 		if ( theme.active && site ) {
@@ -87,7 +87,8 @@ const ThemesSelection = React.createClass( {
 	},
 
 	render() {
-		var site = this.props.sites.getSelectedSite();
+		const site = this.props.selectedSite;
+
 		return (
 			<div className="themes__selection">
 				<StickyPanel>
