@@ -379,6 +379,9 @@ SitesList.prototype.setRecentlySelectedSite = function( siteID ) {
 	// do not add duplicates
 	if ( this.recentlySelected.indexOf( siteID ) === -1 ) {
 		this.recentlySelected.unshift( siteID );
+	} else {
+		this.recentlySelected.splice( this.recentlySelected.indexOf( siteID ), 1 );
+		this.recentlySelected.unshift( siteID );
 	}
 
 	if ( this.recentlySelected.length > 4 ) {
