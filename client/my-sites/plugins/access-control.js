@@ -102,9 +102,20 @@ const hasRestrictedAccess = ( site ) => {
 		);
 	}
 
-	if ( abtest( 'businessPluginsNudge' ) === 'drake' && hasErrorCondition( site, 'noBusinessPlan' ) ) {
-		pluginPageError = wpcomPluginPageError;
-		pluginPageError.actionUrl = '/plans/' + site.slug;
+	if ( hasErrorCondition( site, 'noBusinessPlan' ) ) {
+		switch ( 'nudge' ) {
+			case 'nudge':
+				pluginPageError = {
+					abtest: 'nudge'
+				};
+				break;
+
+			case 'drake':
+			default:
+				pluginPageError = wpcomPluginPageError;
+				pluginPageError.actionUrl = '/plans/' + site.slug;
+				break;
+		}
 	}
 
 	if ( ! sites.hasSiteWithPlugins() && ! site ) {
