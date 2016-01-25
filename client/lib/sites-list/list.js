@@ -395,9 +395,15 @@ SitesList.prototype.getRecentlySelected = function() {
 		return false;
 	}
 
-	return this.get().filter( function( site ) {
-		return this.recentlySelected.indexOf( site.ID ) > -1;
+	let sites = [];
+
+	this.recentlySelected.forEach( function( id, index ) {
+		sites[ index ] = this.get().filter( function( site ) {
+			return id === site.ID;
+		}, this )[0];
 	}, this );
+
+	return sites;
 };
 
 /**
