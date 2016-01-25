@@ -129,6 +129,7 @@ class WpVideoView extends Component {
 					height = { attrs.h }
 					src={ this.getEmbedUrl( attrs ) }
 					frameBorder="0"
+					style={ { width: attrs.w, height: attrs.h } }
 					allowFullScreen />
 			</div>
 		);
