@@ -124,8 +124,11 @@ export default React.createClass( {
 		}.bind( this ), 15000 );
 	},
 
-	handlePluginsUpdate() {
+	handlePluginsUpdate( event ) {
 		window.scrollTo( 0, 0 );
+		if ( this.props.onSelect ) {
+			this.props.onSelect( event );
+		}
 		analytics.ga.recordEvent( 'Site-Indicator', 'Clicked updates available link to plugins updates', 'Total Updates', this.props.site.update && this.props.site.update.total );
 	},
 
@@ -257,7 +260,7 @@ export default React.createClass( {
 				<button className="site-indicator__button" onClick={ this.toggleExpand }>
 					{ this.state.expand ?
 						<Gridicon icon="cross" size={ 18 } />
-					: <Gridicon icon={ this.getIcon() } size={ 16 } /> }
+					: <Gridicon icon={ this.getIcon() } size={ 16 } nonStandardSize /> }
 				</button>
 				{ this.state.expand
 					? <div className="site-indicator__message">
