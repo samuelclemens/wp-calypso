@@ -103,7 +103,7 @@ const hasRestrictedAccess = ( site ) => {
 	}
 
 	if ( hasErrorCondition( site, 'noBusinessPlan' ) ) {
-		switch ( 'nudge' ) {
+		switch ( abtest( 'businessPluginsNudge' ) ) {
 			case 'nudge':
 				pluginPageError = {
 					abtest: 'nudge'
