@@ -94,10 +94,19 @@ export default React.createClass( {
 				</span>
 			);
 		}
+
+		const recordEvent = analytics.ga.recordEvent.bind(
+				analytics,
+				'Site-Indicator',
+				'Clicked updates available link to wp-admin updates',
+				'Total Updates',
+				this.props.site.update && this.props.site.update.total
+			);
+
 		return (
 			<span>
 				<a
-					onClick={ analytics.ga.recordEvent.bind( analytics, 'Site-Indicator', 'Clicked updates available link to wp-admin updates', 'Total Updates', this.props.site.update && this.props.site.update.total ) }
+					onClick={ recordEvent }
 					href={ this.props.site.options.admin_url + 'update-core.php' } >
 					{ this.translate( 'There is an update available.', 'There are updates available.', { count: this.props.site.update.total } ) }
 				</a>
@@ -258,9 +267,10 @@ export default React.createClass( {
 		return (
 			<div className={ indicatorClass }>
 				<button className="site-indicator__button" onClick={ this.toggleExpand }>
-					{ this.state.expand ?
-						<Gridicon icon="cross" size={ 18 } />
-					: <Gridicon icon={ this.getIcon() } size={ 16 } nonStandardSize /> }
+					{ this.state.expand
+						? <Gridicon icon="cross" size={ 18 } />
+						: <Gridicon icon={ this.getIcon() } size={ 16 } nonStandardSize />
+					}
 				</button>
 				{ this.state.expand
 					? <div className="site-indicator__message">

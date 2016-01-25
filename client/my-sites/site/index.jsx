@@ -21,7 +21,7 @@ module.exports = React.createClass( {
 		}
 	},
 
-	componentDidUpdate: function( prevProps, prevState ) {
+	componentDidUpdate: function( prevProps ) {
 		if ( this.props.isSelected && ! prevProps.isSelected ) {
 			this.scrollIntoView();
 		}
@@ -89,7 +89,7 @@ module.exports = React.createClass( {
 		}
 
 		siteClass = classNames( {
-			'site': true,
+			site: true,
 			'is-jetpack': site.jetpack,
 			'is-primary': site.primary,
 			'is-private': site.is_private,
