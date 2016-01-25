@@ -4,12 +4,25 @@
 import React, { Component } from 'react';
 import defaults from 'lodash/object/defaults';
 import omit from 'lodash/object/omit';
+import find from 'lodash/collection/find';
 import QueryString from 'querystring' ;
 
 /**
  * Internal dependencies
  */
 import shortcodeUtils from 'lib/shortcode';
+var MediaActions = require( 'lib/media/actions' ),
+	MediaListStore = require( 'lib/media/list-store' ),
+	MediaUtils = require( 'lib/media/utils' );
+
+
+const getStateData = siteId => {
+	return {
+		media: MediaListStore.getAll( siteId ),
+		mediaHasNextPage: MediaListStore.hasNextPage( siteId ),
+		mediaFetchingNextPage: MediaListStore.isFetchingNextPage( siteId )
+	};
+};
 
 class WpVideoView extends Component {
 
@@ -31,16 +44,62 @@ class WpVideoView extends Component {
 		return encodeURIComponent( content );
 	}
 
+	constructor( props ) {
+		super( props );
+		this.state = getStateData( props.siteId );
+	}
+
+	componentDidMount() {
+		MediaListStore.on( 'change', this.updateStateData.bind( this ) );
+		this.fetchData( this.props.siteId );
+	}
+
+	componentWillUnmount() {
+		MediaListStore.off( 'change', this.updateStateData.bind( this ) );
+	}
+
+	componentWillReceiveProps( nextProps ) {
+		if ( this.props.siteId !== nextProps.siteId ) {
+			this.fetchData( this.props.siteId );
+			this.updateStateData();
+		}
+	}
+
+	fetchData( siteId ) {
+		if ( MediaListStore.getAll( siteId ) ) {
+			return;
+		}
+
+		setTimeout( () => {
+			MediaActions.setQuery( siteId, { mime_type: 'video/' } );
+			MediaActions.fetchNextPage( siteId )
+		}, 0 );
+	}
+
+	updateStateData() {
+		this.setState( getStateData( this.props.siteId ) );
+	}
+
+	getVideoDimensions( videopress_guid ) {
+		if ( this.state.media ) {
+			return find( this.state.media, m => MediaUtils.isVideoPressItem( m ) && m.videopress_guid === videopress_guid );
+		}
+	}
+
 	getShortCodeAttributes() {
 		const shortcode = shortcodeUtils.parse( this.props.content );
 		const namedAttrs = shortcode.attrs.named;
+		const videopress_guid = shortcode.attrs.numeric[0];
+
 		const defaultWidth = 640;
 		const defaultHeight = defaultWidth * 9 / 16;
 
+		const videoDimensions = this.getVideoDimensions( shortcode.attrs.numeric[0] ) || {};
+
 		return defaults( {
-			videopress_guid: shortcode.attrs.numeric[0],
-			w: parseInt( namedAttrs.w, 10 ) || undefined,
-			h: parseInt( namedAttrs.h, 10 ) || undefined,
+			videopress_guid,
+			w: parseInt( namedAttrs.w, 10 ) || videoDimensions.width,
+			h: parseInt( namedAttrs.h, 10 ) || videoDimensions.height,
 			autoplay: namedAttrs.autoplay === 'true',
 			hd: namedAttrs.hd === 'true',
 			loop: namedAttrs.loop === 'true',
