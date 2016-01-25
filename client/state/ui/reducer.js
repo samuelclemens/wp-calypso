@@ -41,12 +41,9 @@ export function recentlySelectedSites( state = [], action ) {
 	switch ( action.type ) {
 		case RECENTLY_SELECTED_SITE_SET:
 			state = [ action.siteId, ...state ];
-			// state = Object.assign( {}, state );
 			if ( state.length > 4 ) {
 				state.pop();
 			}
-			// state.push = action.siteId;
-			console.log(state);
 			break;
 	}
 
