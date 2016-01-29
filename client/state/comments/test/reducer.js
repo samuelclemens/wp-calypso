@@ -8,7 +8,8 @@ import Immutable from 'immutable';
  * Internal dependencies
  */
 import {
-	items
+	items,
+	latestCommentDate
 } from '../reducer';
 import {
 	COMMENTS_RECEIVE,
@@ -80,26 +81,26 @@ describe('reducer', () => {
 
 		} );
 
-		it( 'multiple calls with existing data should do nothing', () => {
+		it( 'multiple calls with existing data should not modify anything', () => {
 			const comments = COMMENTS_MOCK_DATA;
 
 			let res1 = items( undefined, {
 				type: COMMENTS_RECEIVE,
-				comments: comments.slice(0, 2),
+				comments: comments.slice(2),
 				siteId: 1,
 				postId: 1
 			} );
 
 			let res2 = items( res1, {
 				type: COMMENTS_RECEIVE,
-				comments: comments.slice(0, 2),
+				comments: comments.slice(2),
 				siteId: 1,
 				postId: 1
 			} );
 
 			let res3 = items( res2, {
 				type: COMMENTS_RECEIVE,
-				comments: comments.slice(2),
+				comments: comments.slice(0, 2),
 				siteId: 1,
 				postId: 1
 			} );
@@ -134,5 +135,49 @@ describe('reducer', () => {
 			expect( firstChildOfParent === child ).to.be.true;
 
 		} );
-	});
+	} ); // end of items
+
+	describe( '#latestCommentDate()', () => {
+		it( 'should track latest date received', () => {
+			const comments = COMMENTS_MOCK_DATA;
+
+			const state = latestCommentDate( undefined, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			const finalState = latestCommentDate( state, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(0, 2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			expect( finalState.get( postId(1, 1) ) ).to.be.eql( new Date(comments[0].date) );
+
+		} );
+
+		it( 'should track latest date received also in reverse order', () => {
+			const comments = COMMENTS_MOCK_DATA;
+
+			const state = latestCommentDate( undefined, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(0, 2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			const finalState = latestCommentDate( state, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			expect( finalState.get( postId(1, 1) ) ).to.be.eql( new Date(comments[0].date) );
+
+		} );
+	} ); // end of latestCommentDate
 });

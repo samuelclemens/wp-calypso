@@ -18,43 +18,6 @@ import {
 	normalizeDate
 } from './utils';
 
-export function tree( comments ) {
-	const cTree = {};
-
-	for ( let i = 0; i < comments.length; i++ ) {
-		let comment = comments[i];
-		let parent  = null;
-
-		if ( comment.parent ) {
-			if ( ! cTree[ comment.parent.ID ] ) {
-				cTree[ comment.parent.ID ] = {
-					children: [],
-					parent: undefined,
-					data: undefined
-				};
-			}
-
-			parent = cTree[ comment.parent.ID ];
-		}
-
-		if ( ! cTree[ comment.ID ] ) {
-			cTree[ comment.ID ] = {
-				children: [],
-				parent: comment.parent ? comment.parent.ID : null,
-				data: comment
-			};
-		} else {
-			cTree[ comment.ID ].parent = comment.parent ? comment.parent.ID : null;
-			cTree[ comment.ID ].data = comment;
-		}
-
-		if ( parent ) {
-			parent.children.unshift( cTree[ comment.ID ] );
-		}
-	}
-
-	return cTree;
-}
 
 export function items( state = Immutable.Map(), action ) {
 	if ( action.type !== COMMENTS_RECEIVE ) {
@@ -124,8 +87,13 @@ export function latestCommentDate( state = Immutable.Map(), action ) {
 	if ( action.type === COMMENTS_RECEIVE && action.comments.length > 0 ) {
 		// because we always assume comments come in descending order,
 		// latest comment will be always first
-		const latestDate = normalizeDate( action.comments[0].date );
-		return state.set( postId( action.siteId, action.postId ), latestDate );
+		const latestReceivedDate = normalizeDate( action.comments[0].date );
+		const commentedOnIdentifier = postId( action.siteId, action.postId );
+		const currentLatestDate = state.get( commentedOnIdentifier );
+
+		if ( ! currentLatestDate || currentLatestDate < latestReceivedDate ) {
+			return state.set( commentedOnIdentifier, latestReceivedDate );
+		}
 	}
 
 	return state;
