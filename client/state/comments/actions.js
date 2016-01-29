@@ -45,8 +45,6 @@ function commentsRequestFailure( dispatch, requestId, err ) {
 
 export function requestPostComments( siteId, postId ) {
 	return ( dispatch, getState ) => {
-		console.log('state', state);
-
 		const postKey = siteId + '-' + postId;
 		const { comments } = getState();
 

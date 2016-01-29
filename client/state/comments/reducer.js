@@ -65,28 +65,43 @@ export function items( state = Immutable.Map(), action ) {
 
 	const newTree = cTree.withMutations( ( cTree ) => {
 		action.comments.forEach( ( comment ) => {
-
-			if ( comment.parent && ! cTree.get( comment.parent.ID ) ) {
-				cTree = cTree.set( comment.parent.ID , Immutable.fromJS( {
+			if ( comment.parent && ! cTree.has( comment.parent.ID ) ) {
+				cTree = cTree.set( comment.parent.ID, Immutable.fromJS( {
 					children: [],
-					parent: undefined,
+					parentId: undefined,
 					data: undefined
 				} ) );
 			}
 
-			if ( ! cTree.get( comment.ID ) ) {
+			if ( ! cTree.has( comment.ID ) ) {
 				cTree = cTree.set( comment.ID, Immutable.fromJS( {
 					children: [],
-					parent: comment.parent ? comment.parent.ID : null,
+					parentId: comment.parent ? comment.parent.ID : null,
 					data: comment
 				} ) );
 			} else {
-				cTree = cTree.setIn( [ comment.ID, 'parent' ], comment.parent ? cTree.get( comment.parent.ID ) : null )
-							 .setIn( [ comment.ID, 'data' ], Immutable.fromJS( comment ) );
+				const proposedParent = comment.parent ? comment.parent.ID : null;
+				const parentPropPath = [ comment.ID, 'parentId' ];
+				const dataPropPath = [ comment.ID, 'data' ];
+
+				if ( cTree.getIn( parentPropPath ) !== proposedParent ) {
+					cTree = cTree.setIn( [ comment.ID, 'parentId' ], proposedParent );
+				}
+
+				if ( cTree.getIn( dataPropPath ) === undefined ) {
+					cTree = cTree.setIn( dataPropPath, Immutable.fromJS( comment ) );
+				}
+
 			}
 
-			if ( comment.parent.ID ) {
-				cTree = cTree.updateIn([ comment.parent.ID, 'children'], ( children ) => children.unshift( cTree.get( comment.ID ) ));
+			if ( comment.parent ) {
+				const parentChildrenPath = [ comment.parent.ID, 'children' ];
+				const parentHasChild = cTree.getIn( parentChildrenPath ).contains( cTree.get( comment.ID ) );
+
+				// if parent children list don't already has that comment, insert it
+				if ( ! parentHasChild ) {
+					cTree = cTree.updateIn( parentChildrenPath, ( children ) => children.push( cTree.get( comment.ID ) ) );
+				}
 			}
 		} );
 	} );
@@ -110,7 +125,7 @@ export function latestCommentDate( state = Immutable.Map(), action ) {
 		// because we always assume comments come in descending order,
 		// latest comment will be always first
 		const latestDate = normalizeDate( action.comments[0].date );
-		return state.set( postId( siteId, postId ), latestDate );
+		return state.set( postId( action.siteId, action.postId ), latestDate );
 	}
 
 	return state;
