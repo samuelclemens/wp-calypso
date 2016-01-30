@@ -233,7 +233,7 @@ module.exports = {
 				suppressSiteNameLink: true
 			} ),
 			document.getElementById( 'primary' ),
-			store
+			context.store
 		);
 	},
 
