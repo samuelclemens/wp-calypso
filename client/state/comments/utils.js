@@ -11,6 +11,6 @@ export function normalizeDate( dateString ) {
 	return new Date( time );
 }
 
-export function requestId( siteId, postId, query ) {
+export function createRequestId( siteId, postId, query ) {
 	return `${siteId}-${postId}-${JSON.stringify(query)}`;
 }

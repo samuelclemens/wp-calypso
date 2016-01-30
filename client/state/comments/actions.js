@@ -10,7 +10,7 @@ import {
 } from '../action-types';
 import {
 	commentTargetId,
-	requestId
+	createRequestId
 } from './utils';
 
 const MAX_NUMBER_OF_COMMENTS_PER_FETCH = 50;
@@ -58,7 +58,7 @@ export function requestPostComments( siteId, postId ) {
 			query[ 'after' ] = latestCommentForPost.toISOString();
 		}
 
-		const requestId = requestId( siteId, postId, query );
+		const requestId = createRequestId( siteId, postId, query );
 
 		// if the request status is in-flight or completed successfully, no need to re-fetch it
 		if ( [ COMMENTS_REQUEST, COMMENTS_REQUEST_SUCCESS ].indexOf( comments.queries.get( requestId ) ) !== -1 ) {
