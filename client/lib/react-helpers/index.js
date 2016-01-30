@@ -11,6 +11,12 @@ export default {
 				? document.getElementById( domContainer )
 				: domContainer;
 
+		if ( typeof reduxStore.getState !== 'function'
+			|| typeof reduxStore.dispatch !== 'function'
+			|| typeof reduxStore.subscribe !== 'function' ) {
+			throw new Error('Invalid redux store supplied!');
+		}
+
 		return ReactDom.render(
 			React.createElement( ReduxProvider, { store: reduxStore }, reactElement ),
 			domContainerNode
