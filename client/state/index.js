@@ -18,6 +18,7 @@ import themes from 'lib/themes/reducers';
 import users from './users/reducer';
 import currentUser from './current-user/reducer';
 import ui from './ui/reducer';
+import comments from './comments/reducer';
 
 /**
  * Module variables
@@ -32,7 +33,8 @@ const reducer = combineReducers( {
 	themes,
 	users,
 	currentUser,
-	ui
+	ui,
+	comments
 } );
 
 var createStoreWithMiddleware = applyMiddleware(
