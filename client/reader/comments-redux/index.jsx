@@ -14,7 +14,26 @@ import {
 import {
 	requestPostComments
 } from 'state/comments/actions';
+import PostTime from 'reader/post-time';
 
+class Comment extends React.Component {
+	render() {
+		if ( ! this.props.comment ) {
+			return null;
+		}
+
+		const comment = this.props.comment;
+
+		const commentData = comment.get('data');
+
+		return <li className={ 'comment depth-' + this.props.depth }>
+			<p>{commentData.get( 'ID' )}</p>
+			<PostTime date={ commentData.get( 'date' ) } />
+			<p>{ commentData.get( 'date' ) }</p>
+			{comment.get('children').size > 0 ? <ol>{comment.get('children').map( (c) => <Comment key={ commentData.get( 'ID' ) } depth={ this.props.depth + 1 } comment={ c } />)}</ol> : null }
+		</li>
+	}
+}
 
 class PostCommentList extends React.Component {
 
@@ -25,10 +44,27 @@ class PostCommentList extends React.Component {
 		this.props.requestPostComments( siteId, postId );
 	}
 
+	renderComment( comment ) {
+		if ( ! comment ) {
+			return null;
+		}
+
+		const commentData = comment.get('data');
+		return <Comment key={ commentData.get( 'ID' ) } depth={0} comment={ comment } />
+	}
+
+	renderComments( comments ) {
+		if ( ! comments ) {
+			return null;
+		}
+
+		return comments.get('root').map(( c ) => this.renderComment( c ) );
+	}
+
 	render() {
-		return <div>
-			Hello
-		</div>;
+		return <ol className="comments__list is-root">
+			{ this.renderComments( this.props.comments ) }
+		</ol>;
 	}
 }
 
@@ -40,7 +76,7 @@ PostCommentList.propTypes = {
 	onCommentsUpdate: React.PropTypes.func,
 
 	// connect()ed props:
-	comments: React.PropTypes.array.isRequired,
+	comments: React.PropTypes.object.isRequired,
 	requestPostComments: React.PropTypes.func.isRequired
 };
 
