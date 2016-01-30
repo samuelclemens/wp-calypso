@@ -14,7 +14,7 @@ import {
 	COMMENTS_REQUEST_FAILURE
 } from '../action-types';
 import {
-	postId,
+	commentTargetId,
 	normalizeDate
 } from './utils';
 
@@ -24,7 +24,7 @@ export function items( state = Immutable.Map(), action ) {
 		return state;
 	}
 
-	const cTree = state.get( postId( action.siteId, action.postId ) ) || Immutable.OrderedMap();
+	const cTree = state.get( commentTargetId( action.siteId, action.postId ) ) || Immutable.OrderedMap();
 
 	const newTree = cTree.withMutations( ( cTree ) => {
 		action.comments.forEach( ( comment ) => {
@@ -69,7 +69,7 @@ export function items( state = Immutable.Map(), action ) {
 		} );
 	} );
 
-	return state.set( postId( action.siteId, action.postId ), newTree );
+	return state.set( commentTargetId( action.siteId, action.postId ), newTree );
 }
 
 export function queries( state = Immutable.Map(), action ) {
@@ -88,7 +88,7 @@ export function latestCommentDate( state = Immutable.Map(), action ) {
 		// because we always assume comments come in descending order,
 		// latest comment will be always first
 		const latestReceivedDate = normalizeDate( action.comments[0].date );
-		const commentedOnIdentifier = postId( action.siteId, action.postId );
+		const commentedOnIdentifier = commentTargetId( action.siteId, action.postId );
 		const currentLatestDate = state.get( commentedOnIdentifier );
 
 		if ( ! currentLatestDate || currentLatestDate < latestReceivedDate ) {

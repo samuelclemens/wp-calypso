@@ -8,13 +8,12 @@ import {
 	COMMENTS_REQUEST_SUCCESS,
 	COMMENTS_REQUEST_FAILURE
 } from '../action-types';
+import {
+	commentTargetId,
+	requestId
+} from './utils';
 
 const MAX_NUMBER_OF_COMMENTS_PER_FETCH = 50;
-
-
-function requestId( siteId, postId, query ) {
-	return `${siteId}-${postId}-${JSON.stringify(query)}`;
-}
 
 function commentsRequestSuccess( dispatch, requestId, siteId, postId, comments ) {
 	console.log( 'commentsRequestSuccess', arguments );
@@ -45,10 +44,10 @@ function commentsRequestFailure( dispatch, requestId, err ) {
 
 export function requestPostComments( siteId, postId ) {
 	return ( dispatch, getState ) => {
-		const postKey = siteId + '-' + postId;
+		const target = commentTargetId( siteId, postId );
 		const { comments } = getState();
 
-		const latestCommentForPost = comments.latestCommentDate.get( postKey );
+		const latestCommentForPost = comments.latestCommentDate.get( target );
 
 		const query = {
 			order: 'DESC',
@@ -61,20 +60,20 @@ export function requestPostComments( siteId, postId ) {
 
 		const requestId = requestId( siteId, postId, query );
 
-		//TODO: check that status is in-flight or completed successfully, not failed.
-		if ( comments.queries.get( requestId ) ) {
+		// if the request status is in-flight or completed successfully, no need to re-fetch it
+		if ( [ COMMENTS_REQUEST, COMMENTS_REQUEST_SUCCESS ].indexOf( comments.queries.get( requestId ) ) !== -1 ) {
 			return;
 		}
 
-		dispatch({
+		dispatch( {
 			type: COMMENTS_REQUEST,
 			requestId: requestId
-		});
+		} );
 
-		wpcom.site(siteId)
-			.post(postId)
+		wpcom.site( siteId )
+			.post( postId )
 			.comment()
-			.replies(query)
+			.replies( query )
 			.then( ( { comments } ) => commentsRequestSuccess( dispatch, requestId, siteId, postId, comments ) )
 			.catch( (err) => commentsRequestFailure( dispatch, requestId, err ) );
 	};
