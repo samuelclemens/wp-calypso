@@ -20,7 +20,7 @@ import {
 } from '../../action-types';
 import {
 	commentTargetId,
-	requestId
+	createRequestId
 } from '../utils';
 
 const COMMENTS_MOCK_DATA = [
@@ -44,13 +44,15 @@ describe('reducer', () => {
 
 			const commentsTreeId = commentTargetId( data.site_ID, data.comments[0].post.ID );
 			const commentsTreeForPost = commentsTree.get( commentsTreeId );
-			const parent = commentsTreeForPost.get( 764 );
-			const firstChildOfParent = parent.getIn( [ 'children', 0 ]);
+			const parent = commentsTreeForPost.getIn( [ 'tree', 764 ] );
+			const firstChildOfParentId = parent.getIn( [ 'children', 0 ] );
+			const actualFirstChildOfParent = commentsTreeForPost.getIn( [ 'tree', firstChildOfParentId ] );
 
-			expect( Immutable.OrderedMap.isOrderedMap( commentsTreeForPost ) ).to.be.true;
+			expect( Immutable.Map.isMap( commentsTreeForPost ) ).to.be.true;
 			expect( Immutable.Map.isMap( parent ) ).to.be.true;
-			expect( Immutable.Map.isMap( firstChildOfParent ) ).to.be.true;
-			expect( firstChildOfParent ).to.be.eql( commentsTree.getIn( [ commentsTreeId, 765 ] ) );
+			expect( Immutable.List.isList( parent.get( 'children' ) ) ).to.be.true;
+			expect( firstChildOfParentId ).to.be.a.number;
+			expect( actualFirstChildOfParent.getIn( ['data', 'ID'] ) ).to.be.eql( 765 );
 
 		});
 
@@ -71,15 +73,16 @@ describe('reducer', () => {
 				postId: 1
 			} );
 
-
-			const firstChildOfParent = commentsTree2.getIn( [ commentTargetId( 1, 1 ), 6, 'children', 0 ] );
-			const child = commentsTree2.getIn( [ commentTargetId( 1, 1 ), 9 ] );
+			const commentsTreeForPost = commentsTree2.getIn( [ commentTargetId( 1, 1 ), 'tree' ] );
+			const firstChildOfParentId = commentsTreeForPost.getIn( [ 6, 'children', 0 ] );
+			const actualFirstChildOfParent = commentsTreeForPost.get( firstChildOfParentId );
+			const child = commentsTreeForPost.get( 9 );
 
 			expect( commentsTree2.size ).to.equal( 1 );
-			expect( commentsTree2.get( commentTargetId( 1, 1 ) ).size ).to.equal( comments.length );
-			expect( firstChildOfParent.getIn( 'data', 'ID') ).to.be.equal( child.getIn( 'data', 'ID') );
-			expect( commentsTree1 !== commentsTree2 ).to.be.true;
-			expect( firstChildOfParent === child ).to.be.true;
+			expect( commentsTreeForPost.size ).to.equal( comments.length );
+			expect( actualFirstChildOfParent.getIn( [ 'data', 'ID' ] ) ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
+			expect( commentsTree1 ).to.not.be.equal( commentsTree2 );
+			expect( actualFirstChildOfParent.getIn( [ 'data', 'ID' ] ) ).to.be.eql( child.getIn( [ 'data', 'ID' ] ) );
 
 		} );
 
@@ -122,19 +125,23 @@ describe('reducer', () => {
 				postId: 1
 			} );
 
-			const finalRes = res5;
+			const finalResTree = res5;
 
-			const firstChildOfParent = finalRes.getIn( [ commentTargetId( 1, 1 ), 6, 'children', 0 ] );
-			const child = finalRes.getIn( [ commentTargetId( 1, 1 ), 9 ] );
+			const firstChildOfParentId = finalResTree.getIn( [ commentTargetId( 1, 1 ), 'tree', 6, 'children', 0 ] );
+			const actualFirstChildOfParent = finalResTree.getIn( [ commentTargetId( 1, 1 ), 'tree', firstChildOfParentId ] );
+			const child = finalResTree.getIn( [ commentTargetId( 1, 1 ), 'tree', 9 ] );
 
-			//console.log( JSON.stringify( finalRes.toJS() ) );
+			expect( finalResTree.size ).to.equal( 1 );
+			expect( finalResTree.get( commentTargetId( 1, 1 ) ).get('tree').size ).to.equal( comments.length );
+			expect( finalResTree.getIn( [ commentTargetId( 1, 1 ), 'tree', 6, 'children' ] ).size ).to.equal( 1 );
+			expect( firstChildOfParentId ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
+			expect( actualFirstChildOfParent.getIn( [ 'data', 'ID' ] ) ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
+			expect( finalResTree ).to.be.equal( res3 );
+			expect( actualFirstChildOfParent.getIn( ['data', 'ID' ] ) ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
 
-			expect( finalRes.size ).to.equal( 1 );
-			expect( finalRes.get( commentTargetId( 1, 1 ) ).size ).to.equal( comments.length );
-			expect( finalRes.getIn( [ commentTargetId( 1, 1 ), 6, 'children' ] ).size ).to.equal( 1 );
-			expect( firstChildOfParent.getIn( 'data', 'ID') ).to.be.equal( child.getIn( 'data', 'ID') );
-			expect( finalRes === res3 ).to.be.true;
-			expect( firstChildOfParent === child ).to.be.true;
+		} );
+
+		it( 'comments should be ordered by date in root and children lists', () => {
 
 		} );
 	} ); // end of items
@@ -187,21 +194,21 @@ describe('reducer', () => {
 		it( 'should set state of query according to the action', ()  => {
 			const postId = 1;
 			const siteId = 1;
-			const requestIdentifier = requestId( siteId, postId, { after: new Date(), order: 'DESC', number: 10 } );
+			const requestId = createRequestId( siteId, postId, { after: new Date(), order: 'DESC', number: 10 } );
 
 			let action = {
 				type: COMMENTS_REQUEST,
-				requestId: requestIdentifier
+				requestId: requestId
 			};
 
 			let res = queries( undefined, action );
 
-			expect( res.get( requestIdentifier ) ).to.be.eql( COMMENTS_REQUEST );
+			expect( res.get( requestId ) ).to.be.eql( COMMENTS_REQUEST );
 
 			action.type = COMMENTS_REQUEST_FAILURE;
 			res = queries( res, action );
 
-			expect( res.get( requestIdentifier ) ).to.be.eql( COMMENTS_REQUEST_FAILURE );
+			expect( res.get( requestId ) ).to.be.eql( COMMENTS_REQUEST_FAILURE );
 		} );
 	} ); // end of queries
 });

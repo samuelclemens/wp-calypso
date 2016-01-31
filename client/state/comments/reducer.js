@@ -18,6 +18,16 @@ import {
 	normalizeDate
 } from './utils';
 
+/***
+ * Builds a comment tree of the shape
+ * {
+ * 	root: List<id>, // Array of root level comments
+ * 	tree: Map<id, CommentWrapper>
+ * }
+ * @param oldTree previous tree if existing, can be undefined
+ * @param comments array of comments (as returned from wpcom) sorted by date in descending order
+ * @returns Immutable map instance of the shape { root: List<id>, tree: Map<id, CommentWrapper> }
+ */
 function buildCommentsTree( oldTree = Immutable.fromJS( { root: [], tree: {} } ), comments ) {
 
 	const newTree = oldTree.withMutations( ( commentsTree ) => {
@@ -34,6 +44,8 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { root: [], tree: {} } )
 				} ) );
 			}
 
+			// Used to track if we're changing node (parent of some node we saw earlier)
+			// or adding a new comment node
 			let commentNodeChanged = false;
 
 			// if it's the first time we see that comment, create it
@@ -65,20 +77,21 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { root: [], tree: {} } )
 
 			if ( comment.parent ) {
 				const parentChildrenPath = [ comment.parent.ID, 'children' ];
-				const parentHasChild = cTree.getIn( parentChildrenPath ).contains( cTree.get( comment.ID ) );
+				const parentHasChild = cTree.getIn( parentChildrenPath ).contains( comment.ID );
 
 				// if parent's children list don't already has that comment, insert it
 				if ( ! parentHasChild ) {
-					cTree = cTree.updateIn( parentChildrenPath, ( children ) => children.unshift( cTree.get( comment.ID ) ) );
+					cTree = cTree.updateIn( parentChildrenPath, ( children ) => children.unshift( comment.ID ) );
 				}
 			}
 
+			// We check here for commentNodeChanged in order to not add the comment if we already saw it
 			if ( commentNodeChanged && cTree.getIn( [ comment.ID, 'parentId' ] ) === null ) {
-				rootLevel = rootLevel.unshift( cTree.get( comment.ID ) );
+				rootLevel = rootLevel.unshift( comment.ID );
 			}
 		} );
 
-		commentsTree = commentsTree.set( 'tree', cTree ).set( 'root', rootLevel);
+		commentsTree.set( 'tree', cTree ).set( 'root', rootLevel);
 
 	} );
 
@@ -86,7 +99,7 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { root: [], tree: {} } )
 }
 
 
-export function items( state = buildCommentsTree( undefined, [] ), action ) {
+export function items( state = Immutable.Map(), action ) {
 	if ( action.type !== COMMENTS_RECEIVE ) {
 		return state;
 	}
