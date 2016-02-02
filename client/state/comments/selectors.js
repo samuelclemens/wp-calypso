@@ -3,9 +3,9 @@
  */
 
 import {
-	commentTargetId
+	createCommentTargetId
 } from './utils';
 
 export function getComments( state, siteId, postId ) {
-	return state.comments.items.get( commentTargetId( siteId, postId ) );
+	return state.comments.items.get( createCommentTargetId( siteId, postId ) );
 }

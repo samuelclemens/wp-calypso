@@ -15,7 +15,7 @@ import {
 	COMMENTS_REQUEST_FAILURE
 } from '../action-types';
 import {
-	commentTargetId
+	createCommentTargetId
 } from './utils';
 
 /***
@@ -101,14 +101,14 @@ function buildCommentsTree( oldTree = Immutable.fromJS({ children: [], totalComm
 export function items( state = Immutable.Map(), action ) {
 	switch ( action.type ) {
 		case COMMENTS_RECEIVE:
-			const commentsTree = state.get( commentTargetId( action.siteId, action.postId ) );
+			const commentsTree = state.get( createCommentTargetId( action.siteId, action.postId ) );
 			const newTree = buildCommentsTree( commentsTree, action.comments );
 
-			return state.set( commentTargetId( action.siteId, action.postId ), newTree );
+			return state.set( createCommentTargetId( action.siteId, action.postId ), newTree );
 
 			break;
 		case COMMENTS_COUNT_RECEIVE:
-			return state.setIn( [ commentTargetId( action.siteId, action.postId ), 'totalCommentsCount', action.totalCommentsCount ] );
+			return state.setIn( [ createCommentTargetId( action.siteId, action.postId ), 'totalCommentsCount', action.totalCommentsCount ] );
 			break;
 
 		//TODO: Add here handler for POSTS_RECEIVE
@@ -134,7 +134,7 @@ export function latestCommentDate( state = Immutable.Map(), action ) {
 		// because we always assume comments come in descending order,
 		// latest comment will be always first
 		const latestReceivedDate = new Date( action.comments[0].date );
-		const commentedOnIdentifier = commentTargetId( action.siteId, action.postId );
+		const commentedOnIdentifier = createCommentTargetId( action.siteId, action.postId );
 		const currentLatestDate = state.get( commentedOnIdentifier );
 
 		if ( ! currentLatestDate || currentLatestDate < latestReceivedDate ) {

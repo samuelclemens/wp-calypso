@@ -19,7 +19,7 @@ import {
 	COMMENTS_REQUEST_FAILURE
 } from '../../action-types';
 import {
-	commentTargetId,
+	createCommentTargetId,
 	createRequestId
 } from '../utils';
 import {
@@ -40,7 +40,7 @@ describe('reducer', () => {
 				comments: data.comments
 			} );
 
-			const commentsTreeId = commentTargetId( data.site_ID, data.comments[0].post.ID );
+			const commentsTreeId = createCommentTargetId( data.site_ID, data.comments[0].post.ID );
 			const commentsTreeForPost = commentsTree.get( commentsTreeId );
 			const parent = commentsTreeForPost.get( 764 );
 			const firstChildOfParentId = parent.getIn( [ 'children', 0 ] );
@@ -71,7 +71,7 @@ describe('reducer', () => {
 				postId: 1
 			} );
 
-			const commentsTreeForPost = commentsTree2.get( commentTargetId( 1, 1 ) );
+			const commentsTreeForPost = commentsTree2.get( createCommentTargetId( 1, 1 ) );
 			const firstChildOfParentId = commentsTreeForPost.getIn( [ 6, 'children', 0 ] );
 			const actualFirstChildOfParent = commentsTreeForPost.get( firstChildOfParentId );
 			const child = commentsTreeForPost.get( 9 );
@@ -126,14 +126,14 @@ describe('reducer', () => {
 
 			const finalResTree = res5;
 
-			const firstChildOfParentId = finalResTree.getIn( [ commentTargetId( 1, 1 ), 6, 'children', 0 ] );
-			const actualFirstChildOfParent = finalResTree.getIn( [ commentTargetId( 1, 1 ), firstChildOfParentId ] );
-			const child = finalResTree.getIn( [ commentTargetId( 1, 1 ), 9 ] );
+			const firstChildOfParentId = finalResTree.getIn( [ createCommentTargetId( 1, 1 ), 6, 'children', 0 ] );
+			const actualFirstChildOfParent = finalResTree.getIn( [ createCommentTargetId( 1, 1 ), firstChildOfParentId ] );
+			const child = finalResTree.getIn( [ createCommentTargetId( 1, 1 ), 9 ] );
 
 			expect( finalResTree.size ).to.equal( 1 );
-			expect( finalResTree.get( commentTargetId( 1, 1 ) ).size ).to.equal( comments.length + ADDITIONAL_COMMENTS_TREE_PROPS_COUNT );
-			expect( finalResTree.getIn( [ commentTargetId( 1, 1 ), 'fetchedCommentsCount' ] ) ).to.equal( comments.length );
-			expect( finalResTree.getIn( [ commentTargetId( 1, 1 ), 6, 'children' ] ).size ).to.equal( 1 );
+			expect( finalResTree.get( createCommentTargetId( 1, 1 ) ).size ).to.equal( comments.length + ADDITIONAL_COMMENTS_TREE_PROPS_COUNT );
+			expect( finalResTree.getIn( [ createCommentTargetId( 1, 1 ), 'fetchedCommentsCount' ] ) ).to.equal( comments.length );
+			expect( finalResTree.getIn( [ createCommentTargetId( 1, 1 ), 6, 'children' ] ).size ).to.equal( 1 );
 			expect( firstChildOfParentId ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
 			expect( actualFirstChildOfParent.getIn( [ 'data', 'ID' ] ) ).to.be.equal( child.getIn( [ 'data', 'ID' ] ) );
 			expect( finalResTree ).to.be.equal( res3 );
@@ -160,7 +160,7 @@ describe('reducer', () => {
 				postId
 			} );
 
-			const tree = finalRes.get( commentTargetId( siteId, postId ) );
+			const tree = finalRes.get( createCommentTargetId( siteId, postId ) );
 
 			// traverse the comments tree recursively and validate all the dates are in correct order
 			const validateDates = ( childNodesList ) => {
@@ -206,7 +206,7 @@ describe('reducer', () => {
 				postId: 1
 			} );
 
-			expect( finalState.get( commentTargetId(1, 1) ) ).to.be.eql( new Date( comments[0].date ) );
+			expect( finalState.get( createCommentTargetId(1, 1) ) ).to.be.eql( new Date( comments[0].date ) );
 
 		} );
 
@@ -227,7 +227,7 @@ describe('reducer', () => {
 				postId: 1
 			} );
 
-			expect( finalState.get( commentTargetId(1, 1) ) ).to.be.eql( new Date( comments[0].date ) );
+			expect( finalState.get( createCommentTargetId(1, 1) ) ).to.be.eql( new Date( comments[0].date ) );
 
 		} );
 	} ); // end of latestCommentDate

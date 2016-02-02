@@ -10,7 +10,7 @@ import {
 	COMMENTS_REQUEST_FAILURE,
 } from '../action-types';
 import {
-	commentTargetId,
+	createCommentTargetId,
 	createRequestId
 } from './utils';
 
@@ -57,7 +57,7 @@ function commentsRequestFailure( dispatch, requestId, err ) {
 
 export function requestPostComments( siteId, postId ) {
 	return ( dispatch, getState ) => {
-		const target = commentTargetId( siteId, postId );
+		const target = createCommentTargetId( siteId, postId );
 		const { comments } = getState();
 
 		const latestCommentForPost = comments.latestCommentDate.get( target );
