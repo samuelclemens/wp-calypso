@@ -27,7 +27,7 @@ import {
  * @param comments array of comments (as returned from wpcom) sorted by date in descending order
  * @returns Immutable map instance of the shape { root: List<id>, tree: Map<id, CommentNode> }
  */
-function buildCommentsTree( oldTree = Immutable.fromJS({ children: [], totalCommentsCount: undefined, fetchedCommentsCount: 0 }), comments ) {
+function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCommentsCount: undefined, fetchedCommentsCount: 0 } ), comments ) {
 
 	const newTree = oldTree.withMutations( ( commentsTree ) => {
 
@@ -164,5 +164,6 @@ export function earliestCommentDate( state = Immutable.Map(), action ) {
 export default combineReducers( {
 	items,
 	queries,
-	latestCommentDate
+	latestCommentDate,
+	earliestCommentDate
 } );

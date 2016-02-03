@@ -49,17 +49,18 @@ function commentsRequestFailure( dispatch, requestId, err ) {
 
 	dispatch( {
 		type: COMMENTS_REQUEST_FAILURE,
-		requestId: requestId
+		requestId: requestId,
+		error: err
 	} );
 
 }
 
 export function requestPostComments( siteId, postId ) {
 	return ( dispatch, getState ) => {
-		const target = createCommentTargetId( siteId, postId );
+		const commentTargetId = createCommentTargetId( siteId, postId );
 		const { comments } = getState();
 
-		const earliestCommentDateForPost = comments.earliestCommentDate.get( target );
+		const earliestCommentDateForPost = comments.earliestCommentDate.get( commentTargetId );
 
 		const query = {
 			order: 'DESC',
@@ -82,7 +83,7 @@ export function requestPostComments( siteId, postId ) {
 			requestId: requestId
 		} );
 
-		// promise return here is mainly for testing purposes
+		// promise returned here is mainly for testing purposes
 		return wpcom.site( siteId )
 					.post( postId )
 					.comment()
@@ -92,7 +93,7 @@ export function requestPostComments( siteId, postId ) {
 	};
 }
 
-
+// WIP
 export function writeComment( siteId, postId, parentCommentId, commentText ) {
 
 	//wpcom.site( siteId ).post( postId ).comment().add( commentText )
@@ -110,13 +111,13 @@ function createUrlForBatch( urlTemplate, urlParams, queryParams ) {
 	} );
 
 	constructedUrl += '?' + Object.keys( queryParams )
-		.map(function paramEncoder( param ) {
-			return param + '=' + encodeURIComponent( queryParams[ param ] );
-		} ).join('&');
+									.map( ( param ) => param + '=' + encodeURIComponent( queryParams[ param ] ) )
+									.join( '&' );
 
 	return constructedUrl;
 }
 
+// WIP
 export function fetchAllCommentIds( siteId, postId ) {
 	const query = {
 		fields: 'ID',
@@ -142,11 +143,11 @@ export function fetchAllCommentIds( siteId, postId ) {
 				batchUrls.forEach( batch.add.bind( batch ) );
 
 				return batch.run().then( ( batchResultForUrls ) => {
-					let res = batchUrls.map( ( batchUrl ) => batchResultForUrls[ batchUrl ].comments )
-										.map( ( comments ) => comments.map( (comment) => comment.ID ) );
+					let arrayOfCommentIdsArrays = batchUrls.map( ( batchUrl ) => batchResultForUrls[ batchUrl ].comments )
+															.map( ( comments ) => comments.map( ( comment ) => comment.ID ) );
 
 
-					return Array.prototype.concat.apply( commentIds, res );
+					return Array.prototype.concat.apply( commentIds, arrayOfCommentIdsArrays );
 				} );
 			}
 
@@ -154,6 +155,7 @@ export function fetchAllCommentIds( siteId, postId ) {
 		} );
 }
 
+// WIP
 export function pollComments( siteId, postId ) {
 
 }
@@ -167,7 +169,7 @@ export function requestPostCommentsCount( siteId, postId ) {
 			number: 1
 		};
 
-		// promise return here is mainly for testing purposes
+		// promise returned here is mainly for testing purposes
 		return wpcom.site(siteId)
 					.post(postId)
 					.replies(query)
@@ -175,8 +177,4 @@ export function requestPostCommentsCount( siteId, postId ) {
 					.catch( console.error );
 	};
 }
-
-// hack to get comments count:
-// https://public-api.wordpress.com/rest/v1.1/sites/78992097/posts/1012/replies/?http_envelope=1&fields=ID&number=1
-
 
