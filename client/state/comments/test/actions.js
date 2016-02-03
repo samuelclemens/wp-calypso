@@ -30,12 +30,13 @@ Chai.use( sinonChai );
 
 const SITE_ID = 91750058;
 const POST_ID = 287;
+const NOCK_JSON_PATH = require.resolve('./fixtures/nock-requests.json');
 
 describe('actions', () => {
 
 	describe('#receivePost()', () => {
 		before( () => {
-			//nock.load( require.resolve('./fixtures/nock-requests.json') );
+			//nock.load( NOCK_JSON_PATH );
 			//nock.recorder.rec( {
 			//	output_objects: true
 			//} );

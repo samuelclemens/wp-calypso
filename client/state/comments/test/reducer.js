@@ -26,7 +26,7 @@ import {
 import {
 	actualResponse,
 	commentsNestedTree
-} from './fixtures/mock_data';
+} from './fixtures/mock-data';
 
 const ADDITIONAL_COMMENTS_TREE_PROPS_COUNT = 3; // totalCommentsCount, children, and fetchedCommentsCount
 
