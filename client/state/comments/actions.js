@@ -17,7 +17,6 @@ import {
 const MAX_NUMBER_OF_COMMENTS_PER_FETCH = 50;
 
 function commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, totalCommentsCount ) {
-	console.log( 'commentsRequestSuccess', arguments );
 
 	dispatch( {
 		type: COMMENTS_REQUEST_SUCCESS,
@@ -46,7 +45,6 @@ function commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, 
 }
 
 function commentsRequestFailure( dispatch, requestId, err ) {
-	console.log( 'commentsRequestFailure', arguments );
 
 	dispatch( {
 		type: COMMENTS_REQUEST_FAILURE,
@@ -60,15 +58,15 @@ export function requestPostComments( siteId, postId ) {
 		const target = createCommentTargetId( siteId, postId );
 		const { comments } = getState();
 
-		const latestCommentForPost = comments.latestCommentDate.get( target );
+		const latestCommentDateForPost = comments.latestCommentDate.get( target );
 
 		const query = {
 			order: 'DESC',
 			number: MAX_NUMBER_OF_COMMENTS_PER_FETCH
 		};
 
-		if ( latestCommentForPost && latestCommentForPost.toISOString ) {
-			query[ 'after' ] = latestCommentForPost.toISOString();
+		if ( latestCommentDateForPost && latestCommentDateForPost.toISOString ) {
+			query[ 'before' ] = latestCommentDateForPost.toISOString();
 		}
 
 		const requestId = createRequestId( siteId, postId, query );
@@ -83,16 +81,26 @@ export function requestPostComments( siteId, postId ) {
 			requestId: requestId
 		} );
 
-		wpcom.site( siteId )
-			.post( postId )
-			.comment()
-			.replies( query )
-			.then( ( { comments, found } ) => commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, found ) )
-			.catch( (err) => commentsRequestFailure( dispatch, requestId, err ) );
+		// promise return here is mainly for testing purposes
+		return wpcom.site( siteId )
+					.post( postId )
+					.comment()
+					.replies( query )
+					.then( ( { comments, found } ) => commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, found ) )
+					.catch( ( err ) => commentsRequestFailure( dispatch, requestId, err ) );
 	};
 }
 
 
+export function addComment( siteId, postId, parentCommentId, commentText ) {
+
+	//wpcom.site( siteId ).post( postId ).comment().add( commentText )
+	//wpcom.site( siteId ).post( postId ).comment( parentCommentId ).reply( commentText );
+
+
+}
+
+// WIP, maybe will be removed
 export function requestPostCommentsCount( siteId, postId ) {
 	return ( dispatch ) => {
 		const query = {
@@ -101,11 +109,12 @@ export function requestPostCommentsCount( siteId, postId ) {
 			number: 1
 		};
 
-		wpcom.site(siteId)
-			.post(postId)
-			.replies(query)
-			.then( ({ found }) => dispatch( { type: COMMENTS_COUNT_RECEIVE, siteId, postId, totalCommentsCount: found } ))
-			.catch( console.error );
+		// promise return here is mainly for testing purposes
+		return wpcom.site(siteId)
+					.post(postId)
+					.replies(query)
+					.then( ( { found } ) => dispatch( { type: COMMENTS_COUNT_RECEIVE, siteId, postId, totalCommentsCount: found } ))
+					.catch( console.error );
 	};
 }
 

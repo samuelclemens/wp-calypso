@@ -21,7 +21,7 @@ import {
 /***
  * Builds a comment tree of the shape
  * Map<id, CommentNode> {
- * 	children: List<id>, // Array of root level comments
+ * 	children: List<id>, // Array of root level comments ids
  * }
  * @param oldTree previous tree if existing, can be undefined
  * @param comments array of comments (as returned from wpcom) sorted by date in descending order
@@ -87,7 +87,7 @@ function buildCommentsTree( oldTree = Immutable.fromJS({ children: [], totalComm
 				commentsTree.update( 'fetchedCommentsCount', ( fetchedCommentsCount ) => fetchedCommentsCount + 1 );
 
 				if ( commentsTree.getIn( [ comment.ID, 'parentId' ] ) === null ) {
-					commentsTree.update('children', ( children ) => children.unshift( comment.ID ) );
+					commentsTree.update( 'children', ( children ) => children.unshift( comment.ID ) );
 				}
 			}
 		} );
@@ -108,7 +108,7 @@ export function items( state = Immutable.Map(), action ) {
 
 			break;
 		case COMMENTS_COUNT_RECEIVE:
-			return state.setIn( [ createCommentTargetId( action.siteId, action.postId ), 'totalCommentsCount', action.totalCommentsCount ] );
+			return state.setIn( [ createCommentTargetId( action.siteId, action.postId ), 'totalCommentsCount' ], action.totalCommentsCount );
 			break;
 
 		//TODO: Add here handler for POSTS_RECEIVE
