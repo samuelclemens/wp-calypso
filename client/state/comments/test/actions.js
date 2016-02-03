@@ -61,7 +61,7 @@ describe('actions', () => {
 			const dispatchSpy = sinon.spy();
 			const getStateSpy = sinon.stub().returns( {
 				comments: {
-					latestCommentDate: Immutable.Map(),
+					earliestCommentDate: Immutable.Map(),
 					queries: quiresMap
 				}
 			} );
@@ -78,7 +78,7 @@ describe('actions', () => {
 			const dispatchSpy = sinon.spy();
 			const getStateSpy = sinon.stub().returns( {
 				comments: {
-					latestCommentDate: Immutable.Map(),
+					earliestCommentDate: Immutable.Map(),
 					queries: Immutable.Map()
 				}
 			} );
@@ -109,7 +109,7 @@ describe('actions', () => {
 			const dispatchSpy = sinon.spy();
 			const getStateSpy = sinon.stub().returns( {
 				comments: {
-					latestCommentDate: Immutable.fromJS( { [ createCommentTargetId( SITE_ID, POST_ID ) ]: new Date( beforeDateString ) } ),
+					earliestCommentDate: Immutable.fromJS( { [ createCommentTargetId( SITE_ID, POST_ID ) ]: new Date( beforeDateString ) } ),
 					queries: Immutable.Map()
 				}
 			} );

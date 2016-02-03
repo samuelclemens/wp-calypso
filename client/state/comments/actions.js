@@ -58,15 +58,15 @@ export function requestPostComments( siteId, postId ) {
 		const target = createCommentTargetId( siteId, postId );
 		const { comments } = getState();
 
-		const latestCommentDateForPost = comments.latestCommentDate.get( target );
+		const earliestCommentDateForPost = comments.earliestCommentDate.get( target );
 
 		const query = {
 			order: 'DESC',
 			number: MAX_NUMBER_OF_COMMENTS_PER_FETCH
 		};
 
-		if ( latestCommentDateForPost && latestCommentDateForPost.toISOString ) {
-			query[ 'before' ] = latestCommentDateForPost.toISOString();
+		if ( earliestCommentDateForPost && earliestCommentDateForPost.toISOString ) {
+			query[ 'before' ] = earliestCommentDateForPost.toISOString();
 		}
 
 		const requestId = createRequestId( siteId, postId, query );

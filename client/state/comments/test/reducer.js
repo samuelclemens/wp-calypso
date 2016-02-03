@@ -10,6 +10,7 @@ import Immutable from 'immutable';
 import {
 	items,
 	latestCommentDate,
+	earliestCommentDate,
 	queries
 } from '../reducer';
 import {
@@ -231,6 +232,51 @@ describe('reducer', () => {
 
 		} );
 	} ); // end of latestCommentDate
+
+	describe( '#earliestCommentDate()', () => {
+		it( 'should track earliest date received', () => {
+			const comments = commentsNestedTree;
+
+			const state = earliestCommentDate( undefined, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			const finalState = earliestCommentDate( state, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(0, 2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			expect( finalState.get( createCommentTargetId(1, 1) ) ).to.be.eql( new Date( comments[ comments.length - 1 ].date ) );
+
+		} );
+
+		it( 'should track earliest date received also in reverse order', () => {
+			const comments = commentsNestedTree;
+
+			const state = earliestCommentDate( undefined, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(0, 2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			const finalState = earliestCommentDate( state, {
+				type: COMMENTS_RECEIVE,
+				comments: comments.slice(2),
+				siteId: 1,
+				postId: 1
+			} );
+
+			expect( finalState.get( createCommentTargetId(1, 1) ) ).to.be.eql( new Date( comments[ comments.length - 1 ].date ) );
+
+		} );
+	} ); // end of earliestCommentDate
+
 
 	describe('#queries', () => {
 		it( 'should set state of query according to the action', ()  => {

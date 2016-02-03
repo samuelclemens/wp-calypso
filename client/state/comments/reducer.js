@@ -132,13 +132,29 @@ export function queries( state = Immutable.Map(), action ) {
 export function latestCommentDate( state = Immutable.Map(), action ) {
 	if ( action.type === COMMENTS_RECEIVE && action.comments.length > 0 ) {
 		// because we always assume comments come in descending order,
-		// latest comment will be always first
+		// latest comment, the most recent one (by date) will be always first
 		const latestReceivedDate = new Date( action.comments[0].date );
 		const commentedOnIdentifier = createCommentTargetId( action.siteId, action.postId );
 		const currentLatestDate = state.get( commentedOnIdentifier );
 
 		if ( ! currentLatestDate || currentLatestDate < latestReceivedDate ) {
 			return state.set( commentedOnIdentifier, latestReceivedDate );
+		}
+	}
+
+	return state;
+}
+
+export function earliestCommentDate( state = Immutable.Map(), action ) {
+	if ( action.type === COMMENTS_RECEIVE && action.comments.length > 0 ) {
+		// because we always assume comments come in descending order,
+		// earliest comment (by date), the oldest by date, will be always last
+		const earliestReceivedDate = new Date( action.comments[ action.comments.length - 1 ].date );
+		const commentedOnIdentifier = createCommentTargetId( action.siteId, action.postId );
+		const currentEarliestDate = state.get( commentedOnIdentifier );
+
+		if ( ! currentEarliestDate || currentEarliestDate > earliestReceivedDate ) {
+			return state.set( commentedOnIdentifier, earliestReceivedDate );
 		}
 	}
 
