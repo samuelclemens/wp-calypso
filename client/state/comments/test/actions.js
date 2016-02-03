@@ -18,7 +18,8 @@ import {
 	COMMENTS_REQUEST_FAILURE,
 } from '../../action-types';
 import {
-	requestPostComments
+	requestPostComments,
+	fetchAllCommentIds
 } from '../actions';
 import {
 	createCommentTargetId,
@@ -45,7 +46,7 @@ describe('actions', () => {
 
 		after( () => {
 			//var nockCalls = nock.recorder.play();
-			//console.log( nockCalls );
+			//console.log( JSON.stringify( nockCalls ) );
 		} );
 
 		it('should return a thunk', () => {
@@ -133,5 +134,32 @@ describe('actions', () => {
 
 		} );
 
+	}); // requestPostComments
+
+
+	describe( '#fetchAllCommentIds', () => {
+		//before( () => {
+		//	//nock.load( NOCK_JSON_PATH );
+		//	nock.recorder.rec( {
+		//		output_objects: true
+		//	} );
+		//	//nock( 'https://public-api.wordpress.com:443' ).record();
+		//} );
+        //
+		//after( () => {
+		//	var nockCalls = nock.recorder.play();
+		//	console.log( JSON.stringify( nockCalls ) );
+		//} );
+
+		it( 'should fetch batched comments when exceeds MAX_NUMBER_OF_COMMENTS_IN_FETCH_RESULT', function ( done ) {
+			this.timeout( 3000 );
+
+			fetchAllCommentIds( SITE_ID, POST_ID ).then( (res) => {
+				expect( res.length ).to.equal( 118 );
+				done();
+			} ).catch( console.error );
+		} )
 	});
+
+
 });
