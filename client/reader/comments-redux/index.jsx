@@ -18,19 +18,21 @@ import PostTime from 'reader/post-time';
 
 class Comment extends React.Component {
 	render() {
-		if ( ! this.props.comment ) {
+		if ( ! this.props.commentId ) {
 			return null;
 		}
 
-		const comment = this.props.comment;
-
-		const commentData = comment.get('data');
+		const commentId = this.props.commentId;
+		const comments = this.props.comments;
+		const comment = comments.get( commentId );
+		const commentChildrenIds = comment.get('children');
+		const commentData = comment.get( 'data' );
 
 		return <li className={ 'comment depth-' + this.props.depth }>
-			<p>{commentData.get( 'ID' )}</p>
+			<p>{commentId}</p>
 			<PostTime date={ commentData.get( 'date' ) } />
 			<p>{ commentData.get( 'date' ) }</p>
-			{comment.get('children').size > 0 ? <ol>{comment.get('children').map( (c) => <Comment key={ commentData.get( 'ID' ) } depth={ this.props.depth + 1 } comment={ c } />)}</ol> : null }
+			{commentChildrenIds.size > 0 ? <ol>{commentChildrenIds.map( ( childCommentId ) => <Comment key={ childCommentId } depth={ this.props.depth + 1 } commentId={ childCommentId } comments={ this.props.comments } />)}</ol> : null }
 		</li>
 	}
 }
@@ -44,13 +46,12 @@ class PostCommentList extends React.Component {
 		this.props.requestPostComments( siteId, postId );
 	}
 
-	renderComment( comment ) {
-		if ( ! comment ) {
+	renderComment( commentId ) {
+		if ( ! commentId ) {
 			return null;
 		}
 
-		const commentData = comment.get('data');
-		return <Comment key={ commentData.get( 'ID' ) } depth={0} comment={ comment } />
+		return <Comment key={ commentId } depth={ 0 } commentId={ commentId } comments={ this.props.comments } />
 	}
 
 	renderComments( comments ) {
@@ -58,7 +59,7 @@ class PostCommentList extends React.Component {
 			return null;
 		}
 
-		return comments.get('root').map(( c ) => this.renderComment( c ) );
+		return comments.get('children').map(( commentId ) => this.renderComment( commentId ) );
 	}
 
 	render() {
