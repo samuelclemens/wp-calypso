@@ -15,6 +15,7 @@ import {
 } from '../reducer';
 import {
 	COMMENTS_RECEIVE,
+	COMMENTS_REMOVE_COMMENT,
 	COMMENTS_REQUEST,
 	COMMENTS_REQUEST_SUCCESS,
 	COMMENTS_REQUEST_FAILURE
@@ -166,7 +167,7 @@ describe('reducer', () => {
 			// traverse the comments tree recursively and validate all the dates are in correct order
 			const validateDates = ( childNodesList ) => {
 				const actualDatesList = childNodesList.map( ( commentId ) => new Date( tree.getIn( [ commentId, 'data', 'date' ] ) ) );
-				const sortedDatesList = actualDatesList.sort( ( a, b ) => a > b ); // earliest comment first
+				const sortedDatesList = actualDatesList.sort( ( a, b ) => a < b ); // earliest comment first
 
 				const isListsEqual = actualDatesList.equals( sortedDatesList );
 
@@ -187,6 +188,34 @@ describe('reducer', () => {
 			validateDates( tree.get( 'children' ) );
 
 		} );
+
+		it( 'should remove comment', () => {
+			const comments = commentsNestedTree;
+			const postId = 1;
+			const siteId = 1;
+
+			const intermediateRes = items( undefined, {
+				type: COMMENTS_RECEIVE,
+				comments: comments,
+				siteId,
+				postId
+			} );
+
+			expect( intermediateRes.getIn( [ createCommentTargetId( 1, 1 ), 'fetchedCommentsCount' ] ) ).to.equal( comments.length );
+			expect( intermediateRes.getIn( [ createCommentTargetId( 1, 1 ), comments[2].ID ] ) ).to.not.equal( undefined );
+
+			const finalRes = items( intermediateRes, {
+				type: COMMENTS_REMOVE_COMMENT,
+				commentId: comments[2].ID,
+				siteId,
+				postId
+			} );
+
+			expect( finalRes.getIn( [ createCommentTargetId( 1, 1 ), comments[2].ID ] ) ).to.equal( undefined );
+			expect( finalRes.getIn( [ createCommentTargetId( 1, 1 ), 'fetchedCommentsCount' ] ) ).to.equal( comments.length - 1 );
+
+		} )
+
 	} ); // end of items
 
 	describe( '#latestCommentDate()', () => {
