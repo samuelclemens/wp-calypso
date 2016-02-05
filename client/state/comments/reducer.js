@@ -9,6 +9,8 @@ import Immutable from 'immutable';
  */
 import {
 	COMMENTS_RECEIVE,
+	COMMENTS_REMOVE_COMMENT,
+	COMMENTS_ERROR_COMMENT,
 	COMMENTS_COUNT_RECEIVE,
 	COMMENTS_REQUEST,
 	COMMENTS_REQUEST_SUCCESS,
@@ -23,18 +25,16 @@ import {
  * Map<id, CommentNode> {
  * 	children: List<id>, // Array of root level comments ids
  * }
- * @param oldTree previous tree if existing, can be undefined
- * @param comments array of comments (as returned from wpcom) sorted by date in descending order
- * @returns Immutable map instance of the shape { root: List<id>, tree: Map<id, CommentNode> }
+ * @param {Immutable.Map} oldTree previous tree if existing, can be undefined
+ * @param {Array} comments array of comments (as returned from wpcom) sorted by date in descending order
+ * @returns {Immutable.Map} Immutable map instance of the shape Map<id, CommentNode>{ children: List<id> }
  */
 function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCommentsCount: undefined, fetchedCommentsCount: 0 } ), comments ) {
-
 	const newTree = oldTree.withMutations( ( commentsTree ) => {
-
 		comments.forEach( ( comment ) => {
 			// if the comment has a parent, but we haven't seen that parent yet, create a placeholder
 			if ( comment.parent && ! commentsTree.has( comment.parent.ID ) ) {
-				commentsTree = commentsTree.set( comment.parent.ID, Immutable.fromJS( {
+				commentsTree.set( comment.parent.ID, Immutable.fromJS( {
 					children: [],
 					parentId: undefined,
 					data: undefined
@@ -47,7 +47,7 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCom
 
 			// if it's the first time we see that comment, create it
 			if ( ! commentsTree.has( comment.ID ) ) {
-				commentsTree = commentsTree.set( comment.ID, Immutable.fromJS( {
+				commentsTree.set( comment.ID, Immutable.fromJS( {
 					children: [],
 					parentId: comment.parent ? comment.parent.ID : null,
 					data: comment
@@ -62,12 +62,12 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCom
 				const dataPropPath = [ comment.ID, 'data' ];
 
 				if ( commentsTree.getIn( parentPropPath ) !== proposedParent ) {
-					commentsTree = commentsTree.setIn( parentPropPath, proposedParent );
+					commentsTree.setIn( parentPropPath, proposedParent );
 					commentNodeChanged = true;
 				}
 
 				if ( commentsTree.getIn( dataPropPath ) === undefined ) {
-					commentsTree = commentsTree.setIn( dataPropPath, Immutable.fromJS( comment ) );
+					commentsTree.setIn( dataPropPath, Immutable.fromJS( comment ) );
 					commentNodeChanged = true;
 				}
 			}
@@ -78,7 +78,7 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCom
 
 				// if parent's children list don't already has that comment, insert it
 				if ( ! parentHasChild ) {
-					commentsTree = commentsTree.updateIn( parentChildrenPath, ( children ) => children.unshift( comment.ID ) );
+					commentsTree.updateIn( parentChildrenPath, ( children ) => children.push( comment.ID ) );
 				}
 			}
 
@@ -87,29 +87,57 @@ function buildCommentsTree( oldTree = Immutable.fromJS( { children: [], totalCom
 				commentsTree.update( 'fetchedCommentsCount', ( fetchedCommentsCount ) => fetchedCommentsCount + 1 );
 
 				if ( commentsTree.getIn( [ comment.ID, 'parentId' ] ) === null ) {
-					commentsTree.update( 'children', ( children ) => children.unshift( comment.ID ) );
+					commentsTree.update( 'children', ( children ) => children.push( comment.ID ) );
 				}
 			}
-		} );
+		} );// forEach comments
+	} ); // withMutation
 
+	return newTree;
+}
+
+function removeComment( oldTree, commentId ) {
+	const newTree = oldTree.withMutations( ( commentsTree ) => {
+		const commentNode = commentsTree.get( commentId );
+
+		if ( commentNode ) {
+			if ( commentNode.get( 'parentId' ) ) {
+				commentsTree.updateIn( [ commentNode.get( 'parentId' ), 'children' ], ( children ) => children.filter( ( childId ) => childId !== commentId ) );
+			}
+
+			commentsTree.delete( commentId );
+			commentsTree.update( 'fetchedCommentsCount', ( fetchedCommentsCount ) => fetchedCommentsCount - 1 );
+		}
 	} );
 
 	return newTree;
 }
 
-
 export function items( state = Immutable.Map(), action ) {
 	switch ( action.type ) {
 		case COMMENTS_RECEIVE:
-			const commentsTree = state.get( createCommentTargetId( action.siteId, action.postId ) );
-			const newTree = buildCommentsTree( commentsTree, action.comments );
+			{
+				const commentsTree = state.get( createCommentTargetId( action.siteId, action.postId ) );
+				const newTree = buildCommentsTree( commentsTree, action.comments );
 
-			return state.set( createCommentTargetId( action.siteId, action.postId ), newTree );
+				return state.set( createCommentTargetId( action.siteId, action.postId ), newTree );
+				break;
+			}
 
-			break;
+		//TODO: wip, should it be even here ? maybe in a separate reducer
 		case COMMENTS_COUNT_RECEIVE:
-			return state.setIn( [ createCommentTargetId( action.siteId, action.postId ), 'totalCommentsCount' ], action.totalCommentsCount );
-			break;
+			{
+				return state.setIn( [ createCommentTargetId( action.siteId, action.postId ), 'totalCommentsCount' ], action.totalCommentsCount );
+				break;
+			}
+
+		case COMMENTS_REMOVE_COMMENT:
+			{
+				const commentTargetId = createCommentTargetId( action.siteId, action.postId );
+				const commentsTree = state.get( commentTargetId );
+				return state.set( commentTargetId, removeComment( commentsTree, action.commentId ) );
+				break;
+			}
 
 		//TODO: Add here handler for POSTS_RECEIVE
 
