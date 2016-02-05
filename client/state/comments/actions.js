@@ -8,17 +8,19 @@ import {
 	COMMENTS_REQUEST,
 	COMMENTS_REQUEST_SUCCESS,
 	COMMENTS_REQUEST_FAILURE,
+	COMMENTS_REMOVE_COMMENT,
+	COMMENTS_ERROR_COMMENT
 } from '../action-types';
 import {
 	createCommentTargetId,
-	createRequestId
+	createRequestId,
+	createUrlFromTemplate
 } from './utils';
 
 const MAX_NUMBER_OF_COMMENTS_PER_FETCH = 50;
 const MAX_NUMBER_OF_COMMENTS_IN_FETCH_RESULT = 100; /* https://developer.wordpress.com/docs/api/1.1/get/sites/%24site/posts/%24post_ID/replies/ */
 
 function commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, totalCommentsCount ) {
-
 	dispatch( {
 		type: COMMENTS_REQUEST_SUCCESS,
 		requestId: requestId
@@ -42,25 +44,22 @@ function commentsRequestSuccess( dispatch, requestId, siteId, postId, comments, 
 	} else {
 		requestPostCommentsCount( siteId, postId )( dispatch );
 	}
-
 }
 
 function commentsRequestFailure( dispatch, requestId, err ) {
-
 	dispatch( {
 		type: COMMENTS_REQUEST_FAILURE,
 		requestId: requestId,
 		error: err
 	} );
-
 }
 
 export function requestPostComments( siteId, postId ) {
 	return ( dispatch, getState ) => {
 		const commentTargetId = createCommentTargetId( siteId, postId );
-		const { comments } = getState();
+		const currentComments = getState().comments;
 
-		const earliestCommentDateForPost = comments.earliestCommentDate.get( commentTargetId );
+		const earliestCommentDateForPost = currentComments.earliestCommentDate.get( commentTargetId );
 
 		const query = {
 			order: 'DESC',
@@ -68,13 +67,13 @@ export function requestPostComments( siteId, postId ) {
 		};
 
 		if ( earliestCommentDateForPost && earliestCommentDateForPost.toISOString ) {
-			query[ 'before' ] = earliestCommentDateForPost.toISOString();
+			query.before = earliestCommentDateForPost.toISOString();
 		}
 
 		const requestId = createRequestId( siteId, postId, query );
 
 		// if the request status is in-flight or completed successfully, no need to re-fetch it
-		if ( [ COMMENTS_REQUEST, COMMENTS_REQUEST_SUCCESS ].indexOf( comments.queries.get( requestId ) ) !== -1 ) {
+		if ( [ COMMENTS_REQUEST, COMMENTS_REQUEST_SUCCESS ].indexOf( currentComments.queries.get( requestId ) ) !== -1 ) {
 			return;
 		}
 
@@ -93,32 +92,84 @@ export function requestPostComments( siteId, postId ) {
 	};
 }
 
-// WIP
-export function writeComment( siteId, postId, parentCommentId, commentText ) {
-
-	//wpcom.site( siteId ).post( postId ).comment().add( commentText )
-	//wpcom.site( siteId ).post( postId ).comment( parentCommentId ).reply( commentText );
-
+let placeHolderCounter = 0;
+function createPlaceholderComment( commentText, postId, parentCommentId ) {
+	return {
+		ID: 'placeholder-' + ( ++placeHolderCounter ),
+		parent: parentCommentId ? { ID: parentCommentId } : false,
+		date: ( new Date() ).toISOString(),
+		content: commentText,
+		status: 'approved',
+		type: 'comment',
+		post: {
+			ID: postId
+		},
+		isPlaceholder: true
+	};
 }
 
-function createUrlForBatch( urlTemplate, urlParams, queryParams ) {
+//TODO: WIP
+export function writeComment( commentText, siteId, postId, parentCommentId ) {
+	if ( ! commentText || ! siteId || ! postId ) {
+		return;
+	}
 
-	let constructedUrl = urlTemplate;
+	return ( dispatch ) => {
+		const placeholderComment = createPlaceholderComment( commentText, postId, parentCommentId );
 
-	Object.keys( urlParams ).forEach( (key) => {
-		const regex = new RegExp( '\\$' + key, 'g');
-		constructedUrl = constructedUrl.replace( regex, urlParams[ key ] );
-	} );
+		// Insert a placeholder
+		dispatch( {
+			type: COMMENTS_RECEIVE,
+			siteId,
+			postId,
+			comments: [ placeholderComment ]
+		} );
 
-	constructedUrl += '?' + Object.keys( queryParams )
-									.map( ( param ) => param + '=' + encodeURIComponent( queryParams[ param ] ) )
-									.join( '&' );
+		let apiPromise;
 
-	return constructedUrl;
+		if ( parentCommentId ) {
+			apiPromise = wpcom.site( siteId ).post( postId ).comment( parentCommentId ).reply( commentText );
+		} else {
+			apiPromise = wpcom.site( siteId ).post( postId ).comment().add( commentText );
+		}
+
+		return apiPromise.then( ( comment ) => {
+			// remove the placeholder
+			dispatch( {
+				type: COMMENTS_REMOVE_COMMENT,
+				siteId,
+				postId,
+				commentId: placeholderComment.ID
+			} );
+
+			// insert the real comment
+			dispatch( {
+				type: COMMENTS_RECEIVE,
+				siteId,
+				postId,
+				comments: [ comment ]
+			} );
+
+			return comment;
+		} )
+		.catch( ( error ) => {
+			dispatch( {
+				type: COMMENTS_ERROR_COMMENT,
+				siteId,
+				postId,
+				commentId: placeholderComment.ID,
+				error
+			} );
+
+			throw error;
+		} );
+	};
 }
 
-// WIP
+//TODO: WIP
 export function fetchAllCommentIds( siteId, postId ) {
+	// Default order is DESC
+	// https://developer.wordpress.com/docs/api/1.1/get/sites/%24site/posts/%24post_ID/replies/
 	const query = {
 		fields: 'ID',
 		number: MAX_NUMBER_OF_COMMENTS_IN_FETCH_RESULT
@@ -135,17 +186,15 @@ export function fetchAllCommentIds( siteId, postId ) {
 				const batch = wpcom.batch();
 				const batchUrls = [];
 
-
 				for ( let i = MAX_NUMBER_OF_COMMENTS_IN_FETCH_RESULT; i < found; i += MAX_NUMBER_OF_COMMENTS_IN_FETCH_RESULT ) {
-					batchUrls.push( createUrlForBatch( '/sites/$site/posts/$post_ID/replies/', { site: siteId, post_ID: postId }, Object.assign( {}, query, { offset: i } ) ) );
+					batchUrls.push( createUrlFromTemplate( '/sites/$site/posts/$post_ID/replies/', { site: siteId, post_ID: postId }, Object.assign( {}, query, { offset: i } ) ) );
 				}
 
 				batchUrls.forEach( batch.add.bind( batch ) );
 
 				return batch.run().then( ( batchResultForUrls ) => {
 					let arrayOfCommentIdsArrays = batchUrls.map( ( batchUrl ) => batchResultForUrls[ batchUrl ].comments )
-															.map( ( comments ) => comments.map( ( comment ) => comment.ID ) );
-
+															.map( ( arrayOfComments ) => arrayOfComments.map( ( comment ) => comment.ID ) );
 
 					return Array.prototype.concat.apply( commentIds, arrayOfCommentIdsArrays );
 				} );
@@ -155,12 +204,12 @@ export function fetchAllCommentIds( siteId, postId ) {
 		} );
 }
 
-// WIP
+//TODO: WIP
 export function pollComments( siteId, postId ) {
 
 }
 
-// WIP, maybe will be removed
+//TODO: WIP, maybe will be removed
 export function requestPostCommentsCount( siteId, postId ) {
 	return ( dispatch ) => {
 		const query = {
@@ -170,11 +219,10 @@ export function requestPostCommentsCount( siteId, postId ) {
 		};
 
 		// promise returned here is mainly for testing purposes
-		return wpcom.site(siteId)
-					.post(postId)
-					.replies(query)
-					.then( ( { found, comments } ) => dispatch( { type: COMMENTS_COUNT_RECEIVE, siteId, postId, totalCommentsCount: found } ))
-					.catch( console.error );
+		return wpcom.site( siteId )
+					.post( postId )
+					.replies( query )
+					.then( ( { found } ) => dispatch( { type: COMMENTS_COUNT_RECEIVE, siteId, postId, totalCommentsCount: found } ) );
 	};
 }
 
