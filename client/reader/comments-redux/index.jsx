@@ -57,6 +57,7 @@ class Comment extends React.Component {
 		const commentId = this.props.commentId;
 		const commentData = this.props.comments.getIn( [ commentId, 'data' ] ).toJS();
 
+		/*eslint-disable react/no-danger*/
 		return <li className={ 'comment depth-' + this.props.depth }>
 					<div className="comment__author">
 						<Gravatar user={ commentData.author } />
@@ -70,7 +71,7 @@ class Comment extends React.Component {
 							</a>
 						</small>
 					</div>
-					/*eslint-disable react/no-danger*/
+
 					<div className="comment__content" dangerouslySetInnerHTML={{ __html: commentData.content }}></div>
 					{ this.renderChildren() }
 				</li>;
