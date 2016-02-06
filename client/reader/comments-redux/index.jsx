@@ -155,7 +155,7 @@ class PostCommentList extends React.Component {
 
 		return <div className="comments">
 					<div className="comments__top-bar" style={ { 'borderBottom': '1px solid #EBEFF3', 'padding': '6px' } }>
-						{ showViewEarlier ? <a href="javascript:void(0)" onClick={this.viewEarlierCommentsHandler.bind(this)}>View earlier comments...</a> : null }
+						{ showViewEarlier ? <a href="javascript:void(0)" onClick={ this.viewEarlierCommentsHandler.bind(this) }>View earlier comments...</a> : null }
 						<h3 className="comments__count" style={ { 'display': 'initial' } }>{ this.props.comments.get('totalCommentsCount') } comments</h3>
 					</div>
 					<ol className="comments__list is-root">
