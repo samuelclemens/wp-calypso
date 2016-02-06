@@ -26,3 +26,11 @@ export function createUrlFromTemplate( urlTemplate, urlParams, queryParams ) {
 
 	return constructedUrl;
 }
+
+export function fieldsMapper( fields, input ) {
+	let output = {};
+
+	fields.forEach( ( fieldName ) => output[ fieldName ] = input[ fieldName ] );
+
+	return output;
+}
